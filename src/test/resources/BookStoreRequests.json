@@ -1,0 +1,274 @@
+{
+    "login": {
+        "globalUser": {
+            "email": "Jk@JKTech.com",
+            "password": "JKTech123"
+        },
+        "valid": {
+            "email": "abc@test.com",
+            "password": "JKTech123"
+        },
+        "nonExistentEmail": {
+            "email": "nonexistent@example.com",
+            "password": "anyPassword"
+        },
+        "wrongPassword": {
+            "email": "abc@test.com",
+            "password": "wrongPassword"
+        },
+        "missingEmail": {
+            "password": "validPassword"
+        },
+        "missingPassword": {
+            "email": "abc@test.com"
+        },
+        "emptyEmail": {
+            "email": "",
+            "password": "validPassword"
+        },
+        "emptyPassword": {
+            "email": "abc@test.com",
+            "password": ""
+        },
+        "nullEmail": {
+            "email": null,
+            "password": "validPassword"
+        },
+        "nullPassword": {
+            "email": "testNull@test.com",
+            "password": null
+        },
+        "invalidEmailFormat": {
+            "email": "invalid-email-format",
+            "password": "validPassword"
+        },
+        "specialCharacters": {
+            "email": "test@example.com",
+            "password": "!@#$%^&*()"
+        },
+        "longPassword": {
+            "email": "test@example.com",
+            "password": "ThisIsAVeryLongPasswordThatExceeds100CharactersAndShouldBeRejectedByTheAPIAsItIsTooLongForNormalUse"
+        },
+        "unicodeCharacters": {
+            "email": "测试@example.com",
+            "password": "密码123"
+        },
+        "extraFields": {
+            "email": "test@example.com",
+            "password": "password123",
+            "unexpectedField": "shouldBeIgnored",
+            "anotherField": 12345
+        },
+        "caseSensitiveEmail": {
+            "email": "ABC@TEST.COM",
+            "password": "asd"
+        }
+    },
+    "registration": {
+        "globalUser": {
+            "email": "Jk@JKTech.com",
+            "password": "JKTech123"
+        },
+        "valid": {
+            "email": "abc@test.com",
+            "password": "JKTech123"
+        },
+        "missingEmail": {
+            "password": "validPassword123"
+        },
+        "missingPassword": {
+            "email": "test@example.com"
+        },
+        "emptyEmail": {
+            "email": "",
+            "password": "validPassword123"
+        },
+        "emptyPassword": {
+            "email": "test@example.com",
+            "password": ""
+        },
+        "nullEmail": {
+            "email": null,
+            "password": "validPassword123"
+        },
+        "nullPassword": {
+            "email": "testNull@example.com",
+            "password": null
+        },
+        "invalidEmailMissingAt": {
+            "email": "testexample.com",
+            "password": "validPassword123"
+        },
+        "invalidEmailMissingDomain": {
+            "email": "test@",
+            "password": "validPassword123"
+        },
+        "invalidEmailMultipleAt": {
+            "email": "test@@example.com",
+            "password": "validPassword123"
+        },
+        "invalidEmailSpaces": {
+            "email": "test @example.com",
+            "password": "validPassword123"
+        },
+        "invalidEmailSpecialChars": {
+            "email": "test<>@example.com",
+            "password": "validPassword123"
+        },
+        "shortPassword": {
+            "email": "test@example.com",
+            "password": "a"
+        },
+        "longPassword": {
+            "email": "test@example.com",
+            "password": "ThisIsAnExtremelyLongPasswordThatExceeds100CharactersAndShouldBeRejectedByTheSystemAsItIsTooLongForNormalUseAndMightCauseIssues"
+        },
+        "passwordWithSpaces": {
+            "email": "test@example.com",
+            "password": "password with spaces"
+        },
+        "duplicateRegistration": {
+            "email": "abc@test.com",
+            "password": "asd"
+        },
+        "unicodeEmail": {
+            "email": "测试@example.com",
+            "password": "validPassword123"
+        },
+        "unicodePassword": {
+            "email": "test@example.com",
+            "password": "密码测试123"
+        },
+        "extraFields": {
+            "email": "test@example.com",
+            "password": "validPassword123",
+            "firstName": "John",
+            "lastName": "Doe",
+            "age": 25,
+            "unexpectedField": "shouldBeIgnored"
+        },
+        "wrongDataTypes": {
+            "email": 12345,
+            "password": true
+        },
+        "arrayValues": {
+            "email": ["test@example.com"],
+            "password": ["password123"]
+        },
+        "nestedObjects": {
+            "email": { "value": "test@example.com" },
+            "password": {
+                "value": "password123"
+            }
+        }
+    },
+    "books": {
+        "valid": {
+            "published_year": 2024,
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "validUpdate": {
+            "published_year": 2025,
+            "name": "Updated Book",
+            "author": "Updated Author",
+            "book_summary": "Updated summary"
+        },
+        "missingName": {
+            "published_year": 2024,
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "missingAuthor": {
+            "published_year": 2024,
+            "name": "KJ",
+            "book_summary": "oiasn"
+        },
+        "missingYear": {
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "missingSummary": {
+            "published_year": 2024,
+            "name": "KJ",
+            "author": "Srin"
+        },
+        "emptyName": {
+            "published_year": 2024,
+            "name": "",
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "emptyAuthor": {
+            "published_year": 2024,
+            "name": "KJ",
+            "author": "",
+            "book_summary": "oiasn"
+        },
+        "emptySummary": {
+            "published_year": 2024,
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": ""
+        },
+        "nullName": {
+            "published_year": 2024,
+            "name": null,
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "nullAuthor": {
+            "published_year": 2024,
+            "name": "KJ",
+            "author": null,
+            "book_summary": "oiasn"
+        },
+        "invalidYear": {
+            "published_year": -1,
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "futureYear": {
+            "published_year": 3000,
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "stringYear": {
+            "published_year": "2024",
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "negativeId": {
+            "published_year": 2024,
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": "oiasn",
+            "id": -1
+        },
+        "stringId": {
+            "published_year": 2024,
+            "name": "KJ",
+            "author": "Srin",
+            "book_summary": "oiasn",
+            "id": "abc"
+        },
+        "longName": {
+            "published_year": 2024,
+            "name": "This is an extremely long book name that exceeds normal limits and should be tested for boundary conditions and validation rules that might be implemented in the API",
+            "author": "Srin",
+            "book_summary": "oiasn"
+        },
+        "unicodeCharacters": {
+            "published_year": 2024,
+            "name": "测试书籍",
+            "author": "作者",
+            "book_summary": "这是一本测试书籍"
+        }
+    }
+}

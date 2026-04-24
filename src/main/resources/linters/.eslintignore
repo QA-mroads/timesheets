@@ -1,0 +1,13 @@
+node_modules/
+/test-results/
+/playwright-report/
+/playwright/.cache/
+logs/
+build-js/
+emailGenerator.js
+allure-report/
+allure-results/
+*.json
+*.yaml
+*.md
+*.yml

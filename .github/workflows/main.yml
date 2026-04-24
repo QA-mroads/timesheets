@@ -1,0 +1,51 @@
+name: Playwright UI Tests
+
+on:
+    # schedule:
+    # - cron: '0 3-12 * * *' # Runs every hour from 9 AM to 6 PM IST (UTC+5:30)
+    push:
+        branches:
+            - main
+    pull_request:
+        branches:
+            - main
+jobs:
+    test:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v2
+
+            - name: Set up Node.js
+              uses: actions/setup-node@v2
+              with:
+                  node-version: '20'
+
+            - name: Install dependencies
+              run: npm install
+
+            - name: Install playwright
+              run: npx playwright install
+
+            - name: Run Playwright tests
+              run: xvfb-run npm run test:dev
+
+            - name: Upload Playwright report
+              uses: actions/upload-artifact@v4
+              if: ${{ always() }}
+              with:
+                  name: playwright-report
+                  path: playwright-report/
+            - name: Upload Test Results
+              uses: actions/upload-artifact@v4
+              if: ${{ always() }}
+              with:
+                  name: test-results
+                  path: test-results/
+            - name: Upload Json Test Results
+              uses: actions/upload-artifact@v4
+              if: ${{ always() }}
+              with:
+                  name: json-results.json
+                  path: json-results.json

@@ -1,0 +1,15 @@
+package-lock.json
+allure-results
+allure-report
+results*.xml
+logs/
+node_modules/
+playwright-report/
+package-lock.json
+test-results/
+emailReport.html
+SMTPUtil/
+blob-report/
+log/
+browserstackSetupConfig.json
+playwright-browserstack-sdk.config.temp.json
