@@ -4,6 +4,7 @@ export class PannaLoginPage extends BasePage{
     private readonly emailInput: string = "//input[@name='email']";
     private readonly proceedBtn: string = "//button[text()='Proceed']";
     private readonly mailCheckHeader: string = "//h2[text()='Check your email']";
+    private readonly errorUserDoesNotExist: string = "//h2[text()='User does Not exist']";
 
 
     async navigateToLoginPage() {
@@ -22,4 +23,7 @@ export class PannaLoginPage extends BasePage{
     async isMailCheckHeaderVisible(): Promise<string[]> {
         return await this.utility.getText({ selector: this.mailCheckHeader });
     }
-}
+
+    async isUserDoesNotExistErrorVisible(): Promise<string[]> {
+        return await this.utility.getText({ selector: this.errorUserDoesNotExist });
+    }}
