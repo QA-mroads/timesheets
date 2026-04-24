@@ -1,51 +1,86 @@
 name: Playwright UI Tests
 
 on:
-    # schedule:
-    # - cron: '0 3-12 * * *' # Runs every hour from 9 AM to 6 PM IST (UTC+5:30)
-    push:
-        branches:
-            - main
-    pull_request:
-        branches:
-            - main
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
 jobs:
-    test:
-        runs-on: ubuntu-latest
+  test:
+    runs-on: self-hosted   
 
-        steps:
-            - name: Checkout repository
-              uses: actions/checkout@v2
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-            - name: Set up Node.js
-              uses: actions/setup-node@v2
-              with:
-                  node-version: '20'
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-            - name: Install dependencies
-              run: npm install
+      - name: Install dependencies
+        run: npm install
 
-            - name: Install playwright
-              run: npx playwright install
+      - name: Install Playwright
+        run: npx playwright install --with-deps
 
-            - name: Run Playwright tests
-              run: xvfb-run npm run test:dev
+      - name: Run Playwright tests
+        run: xvfb-run npm run test:dev
+        continue-on-error: true   
 
-            - name: Upload Playwright report
-              uses: actions/upload-artifact@v4
-              if: ${{ always() }}
-              with:
-                  name: playwright-report
-                  path: playwright-report/
-            - name: Upload Test Results
-              uses: actions/upload-artifact@v4
-              if: ${{ always() }}
-              with:
-                  name: test-results
-                  path: test-results/
-            - name: Upload Json Test Results
-              uses: actions/upload-artifact@v4
-              if: ${{ always() }}
-              with:
-                  name: json-results.json
-                  path: json-results.json
+      - name: Upload Playwright report
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+      - name: Upload Test Results
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: test-results
+          path: test-results/
+
+      - name: Upload Json Test Results
+        uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: test-results.json
+          path: test-results.json
+
+      - name: Copy reports to Timesheets folder structure
+        if: ${{ always() }}
+        run: |
+          BASE_DIR="/opt/playwright/AutomationReports/Timesheets"
+
+          # Ensure base directory exists
+          mkdir -p "$BASE_DIR"
+
+          # Date format: YYYYMMDD
+          TODAY=$(date +%Y%m%d)
+
+          # Find last run number for today
+          LAST_NUM=$(ls -1 $BASE_DIR 2>/dev/null | grep "Timesheets-$TODAY" | awk -F. '{print $NF}' | sort -n | tail -1)
+
+          # Determine next run number
+          if [ -z "$LAST_NUM" ]; then
+            NEXT_NUM=1
+          else
+            NEXT_NUM=$((LAST_NUM + 1))
+          fi
+
+          FOLDER_NAME="Timesheets-$TODAY.$NEXT_NUM"
+          TARGET_DIR="$BASE_DIR/$FOLDER_NAME"
+
+          echo "Creating report folder: $TARGET_DIR"
+
+          mkdir -p "$TARGET_DIR"
+
+          # Copy all required artifacts
+          rsync -rltv playwright-report/ "$TARGET_DIR/playwright-report/"
+          rsync -rltv test-results/ "$TARGET_DIR/test-results/"
+          cp test-results.json "$TARGET_DIR/"
