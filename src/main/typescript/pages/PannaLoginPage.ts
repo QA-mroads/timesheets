@@ -5,6 +5,9 @@ export class PannaLoginPage extends BasePage{
     private readonly proceedBtn: string = "//button[text()='Proceed']";
     private readonly mailCheckHeader: string = "//h2[text()='Check your email']";
     private readonly errorUserDoesNotExist: string = "//h2[text()='User does Not exist']";
+    private readonly errorInvalidEmail: string = "//span[text()='Invalid email']";
+    private readonly errorEmptyEmail: string = "//span[text()='Email is required']";
+    private readonly loginWithGoogleBtn: string = "//span[text()='Continue with Google']//parent::button";
 
 
     async navigateToLoginPage() {
@@ -26,4 +29,14 @@ export class PannaLoginPage extends BasePage{
 
     async isUserDoesNotExistErrorVisible(): Promise<string[]> {
         return await this.utility.getText({ selector: this.errorUserDoesNotExist });
-    }}
+    }
+
+    async isInvalidEmailErrorVisible(): Promise<string[]> {
+        return await this.utility.getText({ selector: this.errorInvalidEmail });
+    }
+
+    async isEmptyEmailErrorVisible(): Promise<string[]> {
+        return await this.utility.getText({ selector: this.errorEmptyEmail });
+    }
+
+}

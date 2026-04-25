@@ -20,3 +20,15 @@ test('Login with Non-Existent User Test', async ({ pannaLoginPage }) => {
     const isUserDoesNotExistErrorVisible = await pannaLoginPage.isUserDoesNotExistErrorVisible()
     await expect(isUserDoesNotExistErrorVisible).toContain('User does Not exist')
 });
+
+test('Login with Invalid Email Test', async ({ pannaLoginPage }) => {
+    await pannaLoginPage.performLogin('test.com')
+    const isInvalidEmailErrorVisible = await pannaLoginPage.isInvalidEmailErrorVisible()
+    await expect(isInvalidEmailErrorVisible).toContain('Invalid email')
+});
+
+test('Login with Empty Email Test', async ({ pannaLoginPage }) => {
+    await pannaLoginPage.performLogin('')
+    const isEmptyEmailErrorVisible = await pannaLoginPage.isEmptyEmailErrorVisible()
+    await expect(isEmptyEmailErrorVisible).toContain('Email is required')
+});
