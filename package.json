@@ -3,7 +3,7 @@
     "version": "3.0.3",
     "description": "",
     "scripts": {
-        "clean": "rimraf build-js & rimraf allure-results",
+        "clean": "rimraf build-js & rimraf playwright-report & rimraf test-results",
         "test:prod": "cross-env environmentToRun=prod playwright test --workers=3",
         "test:dev": "cross-env environmentToRun=dev playwright test --workers=3",
         "testEnv": "cross-env environmentToRun=test playwright test --workers=3",
