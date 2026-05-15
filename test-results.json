@@ -1,10 +1,10 @@
 {
   "config": {
-    "configFile": "C:\\timesheets\\playwright.config.ts",
-    "rootDir": "C:/timesheets",
+    "configFile": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\playwright.config.ts",
+    "rootDir": "C:/Users/Gauwtham/Documents/GitHub/timesheets",
     "forbidOnly": false,
     "fullyParallel": true,
-    "globalSetup": "C:\\timesheets\\src\\main\\typescript\\helpers\\global-setup.ts",
+    "globalSetup": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\src\\main\\typescript\\helpers\\global-setup.ts",
     "globalTeardown": null,
     "globalTimeout": 0,
     "grep": {},
@@ -16,7 +16,7 @@
     "preserveOutput": "always",
     "projects": [
       {
-        "outputDir": "C:/timesheets/test-results",
+        "outputDir": "C:/Users/Gauwtham/Documents/GitHub/timesheets/test-results",
         "repeatEach": 1,
         "retries": 1,
         "metadata": {
@@ -24,7 +24,7 @@
         },
         "id": "mroads",
         "name": "mroads",
-        "testDir": "C:/timesheets/src/test/typescript",
+        "testDir": "C:/Users/Gauwtham/Documents/GitHub/timesheets/src/test/typescript",
         "testIgnore": [],
         "testMatch": [
           "pannaTs*.spec.ts"
@@ -83,28 +83,28 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 9505,
+                  "duration": 4205,
                   "errors": [],
                   "stdout": [],
                   "stderr": [],
                   "retry": 0,
-                  "startTime": "2026-04-26T04:40:38.346Z",
+                  "startTime": "2026-05-15T04:44:42.867Z",
                   "annotations": [],
                   "attachments": [
                     {
                       "name": "screenshot",
                       "contentType": "image/png",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Page-Title-Test-mroads\\test-finished-1.png"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-Page-Title-Test-mroads\\test-finished-1.png"
                     },
                     {
                       "name": "video",
                       "contentType": "video/webm",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Page-Title-Test-mroads\\video.webm"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-Page-Title-Test-mroads\\video.webm"
                     },
                     {
                       "name": "trace",
                       "contentType": "application/zip",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Page-Title-Test-mroads\\trace.zip"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-Page-Title-Test-mroads\\trace.zip"
                     }
                   ]
                 }
@@ -119,7 +119,7 @@
         },
         {
           "title": "Login Functionality Test",
-          "ok": false,
+          "ok": true,
           "tags": [],
           "tests": [
             {
@@ -132,37 +132,18 @@
                 {
                   "workerIndex": 1,
                   "parallelIndex": 1,
-                  "status": "failed",
-                  "duration": 16685,
-                  "error": {
-                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Check your email\"\u001b[39m\nReceived array: \u001b[31m[]\u001b[39m",
-                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Check your email\"\u001b[39m\nReceived array: \u001b[31m[]\u001b[39m\n    at C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts:15:44",
-                    "location": {
-                      "file": "C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts",
-                      "column": 44,
-                      "line": 15
-                    },
-                    "snippet": "\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39mperformLogin(\u001b[32m'gautham.emp52@yopmail.com'\u001b[39m)\n \u001b[90m 14 |\u001b[39m     \u001b[36mconst\u001b[39m isMailCheckHeaderVisible \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39misMailCheckHeaderVisible()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     \u001b[36mawait\u001b[39m expect(isMailCheckHeaderVisible)\u001b[33m.\u001b[39mtoContain(\u001b[32m'Check your email'\u001b[39m)\n \u001b[90m    |\u001b[39m                                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m\n \u001b[90m 18 |\u001b[39m test(\u001b[32m'Login with Non-Existent User Test'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ pannaLoginPage }) \u001b[33m=>\u001b[39m {\u001b[0m"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts",
-                        "column": 44,
-                        "line": 15
-                      },
-                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Check your email\"\u001b[39m\nReceived array: \u001b[31m[]\u001b[39m\n\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39mperformLogin(\u001b[32m'gautham.emp52@yopmail.com'\u001b[39m)\n \u001b[90m 14 |\u001b[39m     \u001b[36mconst\u001b[39m isMailCheckHeaderVisible \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39misMailCheckHeaderVisible()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     \u001b[36mawait\u001b[39m expect(isMailCheckHeaderVisible)\u001b[33m.\u001b[39mtoContain(\u001b[32m'Check your email'\u001b[39m)\n \u001b[90m    |\u001b[39m                                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m\n \u001b[90m 18 |\u001b[39m test(\u001b[32m'Login with Non-Existent User Test'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ pannaLoginPage }) \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[2m    at C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts:15:44\u001b[22m"
-                    }
-                  ],
+                  "status": "passed",
+                  "duration": 4903,
+                  "errors": [],
                   "stdout": [
                     {
-                      "text": "04-26-2026 10:10:48: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:46: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:10:50: \u001b[32mSent Text gautham.emp52@yopmail.com to element //input[@name='email']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:47: \u001b[32mSent Text gautham.emp52@yopmail.com to element //input[@name='email']\u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:10:50: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:47: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
                     }
                   ],
                   "stderr": [],
@@ -170,131 +151,39 @@
                   "steps": [
                     {
                       "title": "Utility.typeText - Type Text",
-                      "duration": 2318
+                      "duration": 189
                     },
                     {
                       "title": "Utility.click - Click on element",
-                      "duration": 4187
+                      "duration": 780
                     },
                     {
                       "title": "Utility.getText - Get Element Text",
-                      "duration": 67
+                      "duration": 25
                     }
                   ],
-                  "startTime": "2026-04-26T04:40:38.248Z",
+                  "startTime": "2026-05-15T04:44:42.859Z",
                   "annotations": [],
                   "attachments": [
                     {
                       "name": "screenshot",
                       "contentType": "image/png",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads\\test-failed-1.png"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads\\test-finished-1.png"
                     },
                     {
                       "name": "video",
                       "contentType": "video/webm",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads\\video.webm"
-                    },
-                    {
-                      "name": "error-context",
-                      "contentType": "text/markdown",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads\\error-context.md"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads\\video.webm"
                     },
                     {
                       "name": "trace",
                       "contentType": "application/zip",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads\\trace.zip"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads\\trace.zip"
                     }
-                  ],
-                  "errorLocation": {
-                    "file": "C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts",
-                    "column": 44,
-                    "line": 15
-                  }
-                },
-                {
-                  "workerIndex": 3,
-                  "parallelIndex": 1,
-                  "status": "failed",
-                  "duration": 5174,
-                  "error": {
-                    "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Check your email\"\u001b[39m\nReceived array: \u001b[31m[]\u001b[39m",
-                    "stack": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Check your email\"\u001b[39m\nReceived array: \u001b[31m[]\u001b[39m\n    at C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts:15:44",
-                    "location": {
-                      "file": "C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts",
-                      "column": 44,
-                      "line": 15
-                    },
-                    "snippet": "\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39mperformLogin(\u001b[32m'gautham.emp52@yopmail.com'\u001b[39m)\n \u001b[90m 14 |\u001b[39m     \u001b[36mconst\u001b[39m isMailCheckHeaderVisible \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39misMailCheckHeaderVisible()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     \u001b[36mawait\u001b[39m expect(isMailCheckHeaderVisible)\u001b[33m.\u001b[39mtoContain(\u001b[32m'Check your email'\u001b[39m)\n \u001b[90m    |\u001b[39m                                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m\n \u001b[90m 18 |\u001b[39m test(\u001b[32m'Login with Non-Existent User Test'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ pannaLoginPage }) \u001b[33m=>\u001b[39m {\u001b[0m"
-                  },
-                  "errors": [
-                    {
-                      "location": {
-                        "file": "C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts",
-                        "column": 44,
-                        "line": 15
-                      },
-                      "message": "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoContain\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // indexOf\u001b[22m\n\nExpected value: \u001b[32m\"Check your email\"\u001b[39m\nReceived array: \u001b[31m[]\u001b[39m\n\n\u001b[0m \u001b[90m 13 |\u001b[39m     \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39mperformLogin(\u001b[32m'gautham.emp52@yopmail.com'\u001b[39m)\n \u001b[90m 14 |\u001b[39m     \u001b[36mconst\u001b[39m isMailCheckHeaderVisible \u001b[33m=\u001b[39m \u001b[36mawait\u001b[39m pannaLoginPage\u001b[33m.\u001b[39misMailCheckHeaderVisible()\n\u001b[31m\u001b[1m>\u001b[22m\u001b[39m\u001b[90m 15 |\u001b[39m     \u001b[36mawait\u001b[39m expect(isMailCheckHeaderVisible)\u001b[33m.\u001b[39mtoContain(\u001b[32m'Check your email'\u001b[39m)\n \u001b[90m    |\u001b[39m                                            \u001b[31m\u001b[1m^\u001b[22m\u001b[39m\n \u001b[90m 16 |\u001b[39m })\u001b[33m;\u001b[39m\n \u001b[90m 17 |\u001b[39m\n \u001b[90m 18 |\u001b[39m test(\u001b[32m'Login with Non-Existent User Test'\u001b[39m\u001b[33m,\u001b[39m \u001b[36masync\u001b[39m ({ pannaLoginPage }) \u001b[33m=>\u001b[39m {\u001b[0m\n\u001b[2m    at C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts:15:44\u001b[22m"
-                    }
-                  ],
-                  "stdout": [
-                    {
-                      "text": "04-26-2026 10:11:07: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
-                    },
-                    {
-                      "text": "04-26-2026 10:11:08: \u001b[32mSent Text gautham.emp52@yopmail.com to element //input[@name='email']\u001b[39m\r\n"
-                    },
-                    {
-                      "text": "04-26-2026 10:11:08: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
-                    }
-                  ],
-                  "stderr": [],
-                  "retry": 1,
-                  "steps": [
-                    {
-                      "title": "Utility.typeText - Type Text",
-                      "duration": 463
-                    },
-                    {
-                      "title": "Utility.click - Click on element",
-                      "duration": 423
-                    },
-                    {
-                      "title": "Utility.getText - Get Element Text",
-                      "duration": 222
-                    }
-                  ],
-                  "startTime": "2026-04-26T04:41:03.038Z",
-                  "annotations": [],
-                  "attachments": [
-                    {
-                      "name": "screenshot",
-                      "contentType": "image/png",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads-retry1\\test-failed-1.png"
-                    },
-                    {
-                      "name": "video",
-                      "contentType": "video/webm",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads-retry1\\video.webm"
-                    },
-                    {
-                      "name": "error-context",
-                      "contentType": "text/markdown",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads-retry1\\error-context.md"
-                    },
-                    {
-                      "name": "trace",
-                      "contentType": "application/zip",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-Functionality-Test-mroads-retry1\\trace.zip"
-                    }
-                  ],
-                  "errorLocation": {
-                    "file": "C:\\timesheets\\src\\test\\typescript\\pannaTs.spec.ts",
-                    "column": 44,
-                    "line": 15
-                  }
+                  ]
                 }
               ],
-              "status": "unexpected"
+              "status": "expected"
             }
           ],
           "id": "cc55150df8c5e5b5dfca-b6678ec6be776432079f",
@@ -318,17 +207,17 @@
                   "workerIndex": 2,
                   "parallelIndex": 2,
                   "status": "passed",
-                  "duration": 16523,
+                  "duration": 5097,
                   "errors": [],
                   "stdout": [
                     {
-                      "text": "04-26-2026 10:10:46: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:46: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:10:48: \u001b[32mSent Text test123@mroads.com to element //input[@name='email']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:47: \u001b[32mSent Text test123@mroads.com to element //input[@name='email']\u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:10:48: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:47: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
                     }
                   ],
                   "stderr": [],
@@ -336,34 +225,34 @@
                   "steps": [
                     {
                       "title": "Utility.typeText - Type Text",
-                      "duration": 1710
+                      "duration": 610
                     },
                     {
                       "title": "Utility.click - Click on element",
-                      "duration": 4674
+                      "duration": 370
                     },
                     {
                       "title": "Utility.getText - Get Element Text",
-                      "duration": 82
+                      "duration": 106
                     }
                   ],
-                  "startTime": "2026-04-26T04:40:38.250Z",
+                  "startTime": "2026-05-15T04:44:42.873Z",
                   "annotations": [],
                   "attachments": [
                     {
                       "name": "screenshot",
                       "contentType": "image/png",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Non-Existent-User-Test-mroads\\test-finished-1.png"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Non-Existent-User-Test-mroads\\test-finished-1.png"
                     },
                     {
                       "name": "video",
                       "contentType": "video/webm",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Non-Existent-User-Test-mroads\\video.webm"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Non-Existent-User-Test-mroads\\video.webm"
                     },
                     {
                       "name": "trace",
                       "contentType": "application/zip",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Non-Existent-User-Test-mroads\\trace.zip"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Non-Existent-User-Test-mroads\\trace.zip"
                     }
                   ]
                 }
@@ -392,17 +281,17 @@
                   "workerIndex": 0,
                   "parallelIndex": 0,
                   "status": "passed",
-                  "duration": 13532,
+                  "duration": 4163,
                   "errors": [],
                   "stdout": [
                     {
-                      "text": "04-26-2026 10:10:59: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:51: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:10:59: \u001b[32mSent Text test.com to element //input[@name='email']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:51: \u001b[32mSent Text test.com to element //input[@name='email']\u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:10:59: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:51: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
                     }
                   ],
                   "stderr": [],
@@ -410,34 +299,34 @@
                   "steps": [
                     {
                       "title": "Utility.typeText - Type Text",
-                      "duration": 302
+                      "duration": 116
                     },
                     {
                       "title": "Utility.click - Click on element",
-                      "duration": 781
+                      "duration": 270
                     },
                     {
                       "title": "Utility.getText - Get Element Text",
-                      "duration": 59
+                      "duration": 68
                     }
                   ],
-                  "startTime": "2026-04-26T04:40:49.464Z",
+                  "startTime": "2026-05-15T04:44:47.884Z",
                   "annotations": [],
                   "attachments": [
                     {
                       "name": "screenshot",
                       "contentType": "image/png",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Invalid-Email-Test-mroads\\test-finished-1.png"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Invalid-Email-Test-mroads\\test-finished-1.png"
                     },
                     {
                       "name": "video",
                       "contentType": "video/webm",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Invalid-Email-Test-mroads\\video.webm"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Invalid-Email-Test-mroads\\video.webm"
                     },
                     {
                       "name": "trace",
                       "contentType": "application/zip",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Invalid-Email-Test-mroads\\trace.zip"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Invalid-Email-Test-mroads\\trace.zip"
                     }
                   ]
                 }
@@ -463,20 +352,20 @@
               "projectName": "mroads",
               "results": [
                 {
-                  "workerIndex": 2,
-                  "parallelIndex": 2,
+                  "workerIndex": 1,
+                  "parallelIndex": 1,
                   "status": "passed",
-                  "duration": 8625,
+                  "duration": 3960,
                   "errors": [],
                   "stdout": [
                     {
-                      "text": "04-26-2026 10:11:01: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:51: \u001b[32mTrying to get the selector //input[@name='email'] \u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:11:01: \u001b[32mSent Text  to element //input[@name='email']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:51: \u001b[32mSent Text  to element //input[@name='email']\u001b[39m\r\n"
                     },
                     {
-                      "text": "04-26-2026 10:11:01: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
+                      "text": "05-15-2026 10:14:51: \u001b[32mClicking on element with selector //button[text()='Proceed']\u001b[39m\r\n"
                     }
                   ],
                   "stderr": [],
@@ -484,34 +373,34 @@
                   "steps": [
                     {
                       "title": "Utility.typeText - Type Text",
-                      "duration": 394
+                      "duration": 114
                     },
                     {
                       "title": "Utility.click - Click on element",
-                      "duration": 1428
+                      "duration": 145
                     },
                     {
                       "title": "Utility.getText - Get Element Text",
-                      "duration": 97
+                      "duration": 24
                     }
                   ],
-                  "startTime": "2026-04-26T04:40:55.809Z",
+                  "startTime": "2026-05-15T04:44:48.563Z",
                   "annotations": [],
                   "attachments": [
                     {
                       "name": "screenshot",
                       "contentType": "image/png",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Empty-Email-Test-mroads\\test-finished-1.png"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Empty-Email-Test-mroads\\test-finished-1.png"
                     },
                     {
                       "name": "video",
                       "contentType": "video/webm",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Empty-Email-Test-mroads\\video.webm"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Empty-Email-Test-mroads\\video.webm"
                     },
                     {
                       "name": "trace",
                       "contentType": "application/zip",
-                      "path": "C:\\timesheets\\test-results\\pannaTs-Login-with-Empty-Email-Test-mroads\\trace.zip"
+                      "path": "C:\\Users\\Gauwtham\\Documents\\GitHub\\timesheets\\test-results\\pannaTs-Login-with-Empty-Email-Test-mroads\\trace.zip"
                     }
                   ]
                 }
@@ -529,11 +418,11 @@
   ],
   "errors": [],
   "stats": {
-    "startTime": "2026-04-26T04:40:35.515Z",
-    "duration": 34555.916,
-    "expected": 4,
+    "startTime": "2026-05-15T04:44:41.920Z",
+    "duration": 10993.780999999999,
+    "expected": 5,
     "skipped": 0,
-    "unexpected": 1,
+    "unexpected": 0,
     "flaky": 0
   }
 }
