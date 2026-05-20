@@ -40,27 +40,46 @@ const config: PlaywrightTestConfig = {
         screenshot: 'on',
         trace: 'on',
         acceptDownloads: true,
-        permissions: ['clipboard-read', 'clipboard-write'],
+        permissions: ['clipboard-read', 'clipboard-write','notifications','camera','microphone'],
         video: 'on',
     },
 
     /* Configure projects for major browsers */
-    projects: [
-        {
-            name: 'mroads',
-            testDir: './src/test/typescript',
-            testMatch: 'pannaTs*.spec.ts',
-            use: {
-                channel: 'chromium',
-                acceptDownloads: true,
-                headless: true,
-                viewport: null,
-                launchOptions: {
-                    args: ['--start-maximized'],
-                },
+   projects: [
+
+    // =====================================
+    // AUTHENTICATION SETUP PROJECT
+    // =====================================
+    {
+        name: 'setup',
+        testDir: './src/auth',
+        testMatch: 'auth.setup.ts',
+        use: {
+            channel: 'chromium',
+            headless: true,
+        },
+    },
+
+    // =====================================
+    // MAIN TEST PROJECT
+    // =====================================
+    {
+        name: 'mroads',
+        testDir: './src/test/typescript',
+        testMatch: ['timesheetsPage*.spec.ts', 'pannaHomePage*.spec.ts'],
+        dependencies: ['setup'],
+        use: {
+            channel: 'chromium',
+            storageState: './src/auth/user.json',
+            acceptDownloads: true,
+            headless: true,
+            viewport: null,
+            launchOptions: {
+                args: ['--start-maximized'],
             },
         },
-    ],
+    },
+],
 }
 
 export default config

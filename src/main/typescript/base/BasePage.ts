@@ -4,7 +4,7 @@ import ENV from '../../resources/env/env'
 import { Utility } from '../helpers/Utility'
 
 export class BasePage {
-    readonly page: Page
+    page: Page
     readonly utility: Utility
     readonly ENV = ENV
     constructor(page: Page) {
