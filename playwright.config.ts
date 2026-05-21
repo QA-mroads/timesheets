@@ -56,7 +56,7 @@ const config: PlaywrightTestConfig = {
         testMatch: 'auth.setup.ts',
         use: {
             channel: 'chromium',
-            headless: false,
+            headless: true,
         },
     },
 
@@ -72,7 +72,7 @@ const config: PlaywrightTestConfig = {
             channel: 'chromium',
             storageState: './src/auth/user.json',
             acceptDownloads: true,
-            headless: false,
+            headless: true,
             viewport: null,
             launchOptions: {
                 args: ['--start-maximized'],
