@@ -56,7 +56,7 @@ const config: PlaywrightTestConfig = {
         testMatch: 'auth.setup.ts',
         use: {
             channel: 'chromium',
-            headless: true,
+            headless: false,
         },
     },
 
@@ -66,13 +66,13 @@ const config: PlaywrightTestConfig = {
     {
         name: 'mroads',
         testDir: './src/test/typescript',
-        testMatch: ['timesheetsPage*.spec.ts', 'pannaHomePage*.spec.ts'],
+        testMatch: ['timesheetsPage*.spec.ts', 'pannaHomePage*.spec.ts', 'timesheetsSettingsPage*.spec.ts'],
         dependencies: ['setup'],
         use: {
             channel: 'chromium',
             storageState: './src/auth/user.json',
             acceptDownloads: true,
-            headless: true,
+            headless: false,
             viewport: null,
             launchOptions: {
                 args: ['--start-maximized'],

@@ -6,6 +6,7 @@ export class TimesheetsPage extends BasePage{
 // LOCATORS
 // =========================================
 
+private readonly settingsTab = "//p[text()='Settings']/ancestor::div[@role='button']"
 private readonly weekSelectedHeader = "//h6[text()='Week Selected']"
 private readonly addProjectBtn = "//button[normalize-space()='Add Project']"
 private readonly projectsPopup = '#projects-list'
@@ -16,15 +17,13 @@ private readonly totalHoursLabel = "//p[text()='Total Hours :']/following::p[1]"
 private readonly saveBtn = "//button[text()='Save']"
 private readonly resetBtn = "//button[text()='Reset']"
 private readonly confirmResetBtn = "//h2//parent::div//button[text()='Reset']"
-private readonly successToastMessage = "//div[@role='status']"
+private readonly successToastMessage = "//div[@role='status' and text()='Saved Successfully']"
 
 private readonly addActivityBtn = (project: string) => `(//h6[normalize-space()='${project}']/ancestor::div[@data-projection-id]//button)[2]`
 
 private readonly activityInput = (project: string) => `//h6[text()='${project}']/ancestor::div[contains(@class,'MuiGrid-container')]//input[@placeholder='Select Activity']`
 
 private readonly activityOption = (activity: string) => `//li[normalize-space()='${activity}']`
-
-
 private projectRow = (project: string) => `//h6[normalize-space()='${project}']/ancestor::div[@data-projection-id]`
 
 private projectHourInputs = (project: string) => `//h6[normalize-space()='${project}']/ancestor::div[@data-projection-id]//input[@type='text']`
@@ -88,14 +87,16 @@ async getTotalHours() {
 async clickSave() {
     await this.utility.click({ selector: this.saveBtn })
     await this.page.locator(this.successToastMessage).waitFor({state: 'visible', timeout: 30000})
-    return await this.utility.getText({selector: this.successToastMessage})
+    const successMsg = await this.utility.getText({selector: this.successToastMessage})
+    return Array.isArray(successMsg) ? successMsg[0] : successMsg
 }
 
 async clickReset() {
     await this.utility.click({ selector: this.resetBtn })
     await this.utility.click({ selector: this.confirmResetBtn })
     await this.page.locator(this.successToastMessage).waitFor({state: 'visible',timeout: 30000 })
-    return await this.utility.getText({ selector: this.successToastMessage })
+    const resetMsg = await this.utility.getText({ selector: this.successToastMessage })
+    return Array.isArray(resetMsg) ? resetMsg[0] : resetMsg
 }
 
 
@@ -115,6 +116,15 @@ async selectActivityFromLatestRow(activity: string) {
     await latestInput.click()
     await latestInput.fill(activity)
     await this.utility.click({selector: this.activityOption(activity)})
+}
+
+async isProjectOptionVisible(project: string): Promise<boolean> {
+    return await this.utility.checkIfElementExists({selector: this.projectOption(project)}) 
+}
+
+async goToSettingsTab() {
+    await this.utility.click({ selector: this.settingsTab })
+    await this.page.waitForURL('**/settings/timesheet-configuration', { timeout: 30000 })
 }
 
 }

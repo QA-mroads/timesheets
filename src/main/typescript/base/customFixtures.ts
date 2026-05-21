@@ -11,6 +11,7 @@ import { PannaLoginPage } from '../pages/PannaLoginPage'
 import { PannaHomePage } from '../pages/PannaHomePage'
 import { YopMailPage } from '../pages/YopMailPage'
 import { TimesheetsPage } from '../pages/TimesheetsPage'
+import { TimesheetsSettingsPage } from '../pages/TimesheetsSettingsPage'
 
 /**
  * Declare the Pages that you want to use in your test
@@ -26,6 +27,7 @@ type MyFixtures = {
     pannaHomePage: PannaHomePage
     yopMailPage: YopMailPage
     timesheetsPage: TimesheetsPage
+    timesheetsSettingsPage: TimesheetsSettingsPage
 }
 
 /**
@@ -62,6 +64,9 @@ export const test = base.extend<MyFixtures>({
     },
     timesheetsPage: async ({ page }, use) => {
         return await use(new TimesheetsPage(page))
+    },
+    timesheetsSettingsPage: async ({ page }, use) => {
+        return await use(new TimesheetsSettingsPage(page))
     }
 })
 export { expect } from '@playwright/test'
