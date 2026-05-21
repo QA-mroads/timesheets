@@ -60,10 +60,10 @@ test.beforeEach(async ({pannaHomePage,timesheetsPage,timesheetsSettingsPage}) =>
     /**
      * Filter By Project Test
      */
-    // test('Filter By Project Test', async ({ timesheetsSettingsPage }) => {
-    //     const result = await timesheetsSettingsPage.filterByProject('Panna')
-    //     expect(result).toBeTruthy()
-    // })
+    test('Filter By Project Test', async ({ timesheetsSettingsPage }) => {
+        const result = await timesheetsSettingsPage.filterByProject('Panna')
+        expect(result).toBeTruthy()
+    })
 
     /**
      * Filter By Manager Test

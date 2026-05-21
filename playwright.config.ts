@@ -1,4 +1,5 @@
 import type { PlaywrightTestConfig } from '@playwright/test'
+const isHeadless = true // change manually
 /**
  * Read environment variables from file.
  * https://github.com/motdotla/dotenv
@@ -56,7 +57,12 @@ const config: PlaywrightTestConfig = {
         testMatch: 'auth.setup.ts',
         use: {
             channel: 'chromium',
-            headless: true,
+            headless: isHeadless,
+            viewport: isHeadless? { width: 1920, height: 1080, } : null,
+            deviceScaleFactor: isHeadless? 1 : undefined,
+            launchOptions: {
+                args: isHeadless? ['--window-size=1920,1080', ]: [  '--start-maximized', ],
+            },
         },
     },
 
@@ -72,10 +78,11 @@ const config: PlaywrightTestConfig = {
             channel: 'chromium',
             storageState: './src/auth/user.json',
             acceptDownloads: true,
-            headless: true,
-            viewport: null,
+            headless: isHeadless,
+            viewport:  isHeadless? { width: 1920, height: 1080, } : null,
+            deviceScaleFactor: isHeadless? 1 : undefined,
             launchOptions: {
-                args: ['--start-maximized'],
+                args: isHeadless? ['--window-size=1920,1080', ]: [  '--start-maximized', ],
             },
         },
     },
