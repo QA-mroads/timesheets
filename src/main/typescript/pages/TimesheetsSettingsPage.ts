@@ -7,6 +7,7 @@ export class TimesheetsSettingsPage extends BasePage {
     // LOCATORS
     // =========================================
 
+    private readonly orgSetupTab = "//a[@data-testid='org-setup']"
     private readonly table = 'table.w-full'
     private readonly tableHeaders = 'table.w-full th'
     private readonly tableRows = 'table.w-full tbody tr'
@@ -108,5 +109,10 @@ export class TimesheetsSettingsPage extends BasePage {
 
     async clearFilters() {
         await this.utility.click({selector: this.removeFiltersBtn})
+    }
+
+    async goToOrgSetup() {
+        await this.utility.click({selector: this.orgSetupTab})
+        await this.page.waitForURL('**/settings/organization/leaves-configuration**', { timeout: 30000 })
     }
 }
