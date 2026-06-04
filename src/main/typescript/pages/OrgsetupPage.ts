@@ -117,25 +117,28 @@ export class OrgSetupPage extends BasePage {
     // =========================================
 
     async getSuccessMsg(): Promise<string> {
+    // ✅ Guard against closed page
+    if (this.page.isClosed()) return 'Failed Process'
+
+    try {
+        const successLocator = this.page.locator(this.successMsg)
+        await successLocator.waitFor({ state: 'visible', timeout: 10000 })
+        const text = await successLocator.innerText()
+        console.log(text)
+        await this.page.waitForTimeout(2000)
+        return text
+    } catch {
+        if (this.page.isClosed()) return 'Failed Process'  // ✅ guard here too
         try {
-            const successLocator = this.page.locator(this.successMsg)
-            await successLocator.waitFor({ state: 'visible', timeout: 30000 })
-            const text = await successLocator.innerText()
-            console.log(text)
-            await this.page.waitForTimeout(4000)
-            return text
+            const errorText = await this.page.locator(this.errorMsg).innerText()
+            console.log(errorText)
+            await this.utility.click({ selector: this.closeBtn })
+            return errorText
         } catch {
-            try {
-                const errorText = await this.page.locator(this.errorMsg).innerText()
-                console.log(errorText)
-                await this.utility.click({ selector: this.closeBtn })
-                return errorText
-            } catch {
-                await this.utility.click({ selector: this.closeBtn })
-                return 'Failed Process'
-            }
+            return 'Failed Process'  // ✅ removed closeBtn click — page may be closed
         }
     }
+}
 
     // =========================================
     // PAGINATION
@@ -182,15 +185,15 @@ export class OrgSetupPage extends BasePage {
         await this.utility.click({ selector: this.editBtnByLeaveType(leaveTypeName) })
     }
 
-    async deleteLeaveType(leaveTypeName: string): Promise<void> {
-        const rowLocator = this.page.locator(this.rowByLeaveType(leaveTypeName))
-        await rowLocator.hover()
-        await this.utility.click({ selector: this.deleteBtnByLeaveType(leaveTypeName) })
-        const okLocator = this.page.locator(this.okBtn)
-        await okLocator.waitFor({ state: 'visible', timeout: 30000 })
-        await okLocator.click()
-        await this.page.waitForTimeout(2000)
-    }
+    // async deleteLeaveType(leaveTypeName: string): Promise<void> {
+    //     const rowLocator = this.page.locator(this.rowByLeaveType(leaveTypeName))
+    //     await rowLocator.hover()
+    //     await this.utility.click({ selector: this.deleteBtnByLeaveType(leaveTypeName) })
+    //     const okLocator = this.page.locator(this.okBtn)
+    //     await okLocator.waitFor({ state: 'visible', timeout: 30000 })
+    //     await okLocator.click()
+    //     await this.page.waitForTimeout(2000)
+    // }
 
     async addLeaveType(
         leaveName: string,
@@ -218,51 +221,118 @@ export class OrgSetupPage extends BasePage {
         await cnfmLocator.click()
     }
 
-    async editLeaveType(updatedFields: Map<string, string>): Promise<void> {
-        for (const [fieldName, value] of updatedFields.entries()) {
-            switch (fieldName) {
-                case 'Leave Name': {
-                    const field = this.page.locator(this.leaveType)
-                    await field.click()
-                    await field.selectText()
-                    await field.press('Delete')
-                    await field.fill(value)
-                    break
-                }
-                case 'Leave Count': {
-                    const field = this.page.locator(this.leaveCount)
-                    await field.click()
-                    await field.selectText()
-                    await field.press('Delete')
-                    await field.fill(value)
-                    break
-                }
-                case 'Short Code': {
-                    const field = this.page.locator(this.shortName)
-                    await field.click()
-                    await field.selectText()
-                    await field.press('Delete')
-                    await field.fill(value)
-                    break
-                }
-                case 'Color Code': {
-                    const field = this.page.locator(this.colorCode)
-                    await field.click()
-                    await field.selectText()
-                    await field.press('Delete')
-                    await field.fill(value)
-                    break
-                }
-                default:
-                    console.log(`Invalid field name: ${fieldName}`)
-            }
-        }
+ // ✅ Single method for Edit
+async editLeaveType(leaveTypeName: string, updatedFields: Map<string, string>): Promise<void> {
+    const row = this.page.locator(this.rowByLeaveType(leaveTypeName))
+    await row.waitFor({ state: 'visible', timeout: 10000 })
+    await row.hover()
 
-        await this.utility.click({ selector: this.updateBtn })
-        const cnfmLocator = this.page.locator(this.cnfmPromptOkBtn)
-        await cnfmLocator.waitFor({ state: 'visible', timeout: 30000 })
-        await cnfmLocator.click()
+    // ✅ Wait for the SVG icon to actually appear after hover
+    const editBtn = this.page.locator(this.editBtnByLeaveType(leaveTypeName))
+    await editBtn.waitFor({ state: 'visible', timeout: 5000 })
+    await editBtn.dispatchEvent('click')  // ✅ bypasses hover-state dependency
+
+    for (const [fieldName, value] of updatedFields.entries()) {
+        let selector: string
+        switch (fieldName) {
+            case 'Leave Name':  selector = this.leaveType;  break
+            case 'Leave Count': selector = this.leaveCount; break
+            case 'Short Code':  selector = this.shortName;  break
+            case 'Color Code':  selector = this.colorCode;  break
+            default: console.log(`Invalid field: ${fieldName}`); continue
+        }
+        const field = this.page.locator(selector)
+        await field.click()
+        await field.selectText()
+        await field.press('Delete')
+        await field.fill(value)
     }
+
+    await this.utility.click({ selector: this.updateBtn })
+    try {
+        await this.page.locator(this.cnfmPromptOkBtn).waitFor({ state: 'visible', timeout: 5000 })
+        await this.page.locator(this.cnfmPromptOkBtn).click()
+    } catch {
+        console.log('Confirmation prompt did not appear — skipping')
+    }
+}
+
+async deleteLeaveType(leaveTypeName: string): Promise<void> {
+    const row = this.page.locator(this.rowByLeaveType(leaveTypeName))
+    await row.waitFor({ state: 'visible', timeout: 10000 })
+    await row.hover()
+
+    const deleteBtn = this.page.locator(this.deleteBtnByLeaveType(leaveTypeName))
+    await deleteBtn.waitFor({ state: 'visible', timeout: 5000 })
+    await deleteBtn.dispatchEvent('click')
+
+    // // ✅ Wait for the confirm prompt modal to appear
+    // const confirmModal = this.page.locator("//h2[contains(text(),'Are you sure')]")
+    // await confirmModal.waitFor({ state: 'visible', timeout: 5000 })
+
+    // // ✅ Click OK only within the confirm modal — avoids locator ambiguity
+    // const okBtn = this.page.locator("//h2[contains(text(),'Are you sure')]/ancestor::div[@role='dialog']//button[text()='OK' or text()='Ok']")
+    // await okBtn.waitFor({ state: 'visible', timeout: 5000 })
+    // await okBtn.click()
+    // ✅ Wait for confirm modal
+    await this.page.waitForTimeout(1000)
+
+    // ✅ Debug: log all button texts inside any dialog/modal
+    const allBtns = await this.page.locator("//div[@role='dialog']//button | //div[contains(@class,'modal')]//button | //div[contains(@class,'swal')]//button").all()
+    for (const btn of allBtns) {
+        console.log('Button found in modal:', await btn.textContent())
+    }
+
+        const okLocator = this.page.locator(this.okBtn)
+        await okLocator.waitFor({ state: 'visible', timeout: 30000 })
+        await okLocator.click()
+        await this.page.waitForTimeout(2000)
+}
+    // async editLeaveType(updatedFields: Map<string, string>): Promise<void> {
+    //     for (const [fieldName, value] of updatedFields.entries()) {
+    //         switch (fieldName) {
+    //             case 'Leave Name': {
+    //                 const field = this.page.locator(this.leaveType)
+    //                 await field.click()
+    //                 await field.selectText()
+    //                 await field.press('Delete')
+    //                 await field.fill(value)
+    //                 break
+    //             }
+    //             case 'Leave Count': {
+    //                 const field = this.page.locator(this.leaveCount)
+    //                 await field.click()
+    //                 await field.selectText()
+    //                 await field.press('Delete')
+    //                 await field.fill(value)
+    //                 break
+    //             }
+    //             case 'Short Code': {
+    //                 const field = this.page.locator(this.shortName)
+    //                 await field.click()
+    //                 await field.selectText()
+    //                 await field.press('Delete')
+    //                 await field.fill(value)
+    //                 break
+    //             }
+    //             case 'Color Code': {
+    //                 const field = this.page.locator(this.colorCode)
+    //                 await field.click()
+    //                 await field.selectText()
+    //                 await field.press('Delete')
+    //                 await field.fill(value)
+    //                 break
+    //             }
+    //             default:
+    //                 console.log(`Invalid field name: ${fieldName}`)
+    //         }
+    //     }
+
+    //     await this.utility.click({ selector: this.updateBtn })
+    //     const cnfmLocator = this.page.locator(this.cnfmPromptOkBtn)
+    //     await cnfmLocator.waitFor({ state: 'visible', timeout: 30000 })
+    //     await cnfmLocator.click()
+    // }
 
     // =========================================
     // FILTER METHODS

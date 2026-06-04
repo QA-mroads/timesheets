@@ -117,13 +117,9 @@ test('Edit Leave Type Test', async ({ orgSetup }) => {
         ['Leave Name', 'Auto Test One Edit'],
         ['Short Code', 'ATE'],
     ])
-
     await orgSetup.searchLeaveType('Auto Test One (AT)')
-    await orgSetup.editBtnClick('Auto Test One (AT)')
-    await orgSetup.editLeaveType(updatedFields)
-
-    const msg = await orgSetup.getSuccessMsg()
-    expect(msg.toLowerCase()).toContain(UPDATED_PARTIAL_SUCCESS_MSG)
+    await orgSetup.editLeaveType('Auto Test One (AT)', updatedFields)  // ✅ single call
+    expect((await orgSetup.getSuccessMsg()).toLowerCase()).toContain(UPDATED_PARTIAL_SUCCESS_MSG)
 })
 
 /**
@@ -131,10 +127,8 @@ test('Edit Leave Type Test', async ({ orgSetup }) => {
  */
 test('Delete Leave Type Test', async ({ orgSetup }) => {
     await orgSetup.searchLeaveType('Auto Test One Edit (ATE)')
-    await orgSetup.deleteLeaveType('Auto Test One Edit (ATE)')
-
-    const msg = await orgSetup.getSuccessMsg()
-    expect(msg.toLowerCase()).toContain(DELETED_PARTIAL_SUCCESS_MSG)
+    await orgSetup.deleteLeaveType('Auto Test One Edit (ATE)')          // ✅ unchanged signature
+    expect((await orgSetup.getSuccessMsg()).toLowerCase()).toContain(DELETED_PARTIAL_SUCCESS_MSG)
 })
 
 /**

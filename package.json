@@ -5,7 +5,7 @@
   "scripts": {
     "clean": "rimraf build-js & rimraf playwright-report & rimraf test-results",
     "test:prod": "cross-env environmentToRun=prod playwright test --workers=3",
-    "test:dev": "cross-env environmentToRun=dev playwright test --workers=2",
+    "test:dev": "cross-env environmentToRun=dev playwright test --workers=1",
     "testEnv": "cross-env environmentToRun=test playwright test --workers=3",
     "shard": "cross-env environmentToRun=prod npx playwright test --project=$(project) --shard=$(shard)",
     "report": "allure generate allure-results --clean",
