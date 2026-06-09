@@ -72,7 +72,11 @@ const config: PlaywrightTestConfig = {
     {
         name: 'mroads',
         testDir: './src/test/typescript',
-        testMatch: ['timesheetsPage*.spec.ts', 'pannaHomePage*.spec.ts', 'timesheetsSettingsPage*.spec.ts', 'orgSetupPage*.spec.ts'],
+        testMatch: ['timesheetsPage*.spec.ts',
+            'pannaHomePage*.spec.ts',
+            'timesheetsSettingsPage*.spec.ts',
+            'orgSetupPage*.spec.ts',
+            'holidaysPage*.spec.ts'],
         dependencies: ['setup'],
         use: {
             channel: 'chromium',
