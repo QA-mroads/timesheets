@@ -66,28 +66,29 @@ test('Filter By Holiday Calendar Test', async ({ holidaysPage }) => {
     expect(await holidaysPage.filterByHolidayCalendar('India_Holiday_2026')).toBeTruthy()
 })
 
-// test('Add Holiday Test', async ({ holidaysPage }) => {
-//     await holidaysPage.addNewHoliday('India_Holiday_2026', '2026', 'July', '7', 'Automation Testing Holiday')
-//     const msg = await holidaysPage.getSuccessMsg()
-//     expect(msg.toLowerCase()).toContain(USERS_PAGE_PARTIAL_SUCCESS_MSG)
-// })
+test('Add Holiday Test', async ({ holidaysPage }) => {
+    const dateValue = '2026-December-29'
+    await holidaysPage.addNewHoliday('India_Holiday_2026', dateValue, 'Automation Testing Holiday')
+    const msg = await holidaysPage.getSuccessMsg()
+    expect(msg.toLowerCase()).toContain(USERS_PAGE_PARTIAL_SUCCESS_MSG)
+})
 
-// test('Edit Holiday Test', async ({ holidaysPage }) => {
-//     const updatedFields = new Map<string, string>([
-//         ['Description', 'Testing Holiday Updated']
-//     ])
-//     await holidaysPage.searchHoliday('Automation Testing Holiday')
-//     await holidaysPage.editHoliday('Automation Testing Holiday', updatedFields)
-//     const msg = await holidaysPage.getSuccessMsg()
-//     expect(msg.toLowerCase()).toContain(UPDATED_PARTIAL_SUCCESS_MSG)
-// })
+test('Edit Holiday Test', async ({ holidaysPage }) => {
+    const updatedFields = new Map<string, string>([
+        ['Description', 'Testing Holiday Updated']
+    ])
+    await holidaysPage.searchHoliday('Automation Testing Holiday')
+    await holidaysPage.editHoliday('Automation Testing Holiday', updatedFields)
+    const msg = await holidaysPage.getSuccessMsg()
+    expect(msg.toLowerCase()).toContain(UPDATED_PARTIAL_SUCCESS_MSG)
+})
 
-// test('Delete Holiday Test', async ({ holidaysPage }) => {
-//     await holidaysPage.searchHoliday('Testing Holiday Updated')
-//     await holidaysPage.deleteHoliday('Testing Holiday Updated')
-//     const msg = await holidaysPage.getSuccessMsg()
-//     expect(msg.toLowerCase()).toContain(DELETED_PARTIAL_SUCCESS_MSG)
-// })
+test('Delete Holiday Test', async ({ holidaysPage }) => {
+    await holidaysPage.searchHoliday('Testing Holiday Updated')
+    await holidaysPage.deleteHoliday('Testing Holiday Updated')
+    const msg = await holidaysPage.getSuccessMsg()
+    expect(msg.toLowerCase()).toContain(DELETED_PARTIAL_SUCCESS_MSG)
+})
 
 test('Validate Holiday Mandatory Fields Test', async ({ holidaysPage }) => {
     await holidaysPage.openAddHolidayForm()
@@ -117,4 +118,27 @@ test('Holiday Reset Form Test', async ({ holidaysPage }) => {
     await holidaysPage.enterDescriptionOnly('Test Description')
     await holidaysPage.clickReset()
     expect(await holidaysPage.isFormCleared()).toBeTruthy()
+})
+
+test('Past Holiday Date Disabled Test', async ({ holidaysPage }) => {
+    await holidaysPage.openHolidayDatePicker()
+    const today = new Date()
+    const yesterday = new Date()
+    yesterday.setDate(today.getDate() - 1)
+    if (yesterday.getMonth() !== today.getMonth()) {
+        test.skip(true, 'Today is the 1st of the month — skipping same-month past-date check')
+    }
+    const isDisabled = await holidaysPage.isCurrentMonthDayDisabled(yesterday.getDate().toString())
+    expect(isDisabled).toBeTruthy()
+})
+
+test('Duplicate Holiday Date Validation Test', async ({ holidaysPage }) => {
+    const dateValue = '2026-December-25'
+    // Holiday already exists on this date (created manually) — attempt should fail
+    await holidaysPage.addNewHoliday('India_Holiday_2026', dateValue, 'Duplicate Date Test')
+    const duplicateError = await holidaysPage.getDuplicateDateError()
+    expect(duplicateError).not.toBeNull()
+    expect(duplicateError?.toLowerCase()).toContain('already exist')
+    // Form is still open since Add failed validation — close it
+    await holidaysPage.safelyCloseHolidayForm()
 })

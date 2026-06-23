@@ -16,8 +16,6 @@ export class HolidaysPage extends BasePage {
     private readonly addBtn = "//button[@data-testid='add-holiday/add-or-update']"
     private readonly errorMsg = "//div[@class='text-error text-xs']"
     private readonly closeBtn = "//div[@class='absolute text-right mr-2 right-2 top-2']//*[local-name()='svg' and @class='cursor-pointer']"
-    private readonly calendarSwitchYear = "//button[@aria-label='calendar view is open, switch to year view']"
-    private readonly nextMonthBtn = "//button[@title='Next month']"
     private readonly holidaysListName = "//tbody//td[3]"
     private readonly paginationNext = "//*[local-name()='svg' and @class='-rotate-90 cursor-pointer']"
     private readonly table = 'table.w-full'
@@ -34,12 +32,16 @@ export class HolidaysPage extends BasePage {
     private readonly errorMsgs = "//div[contains(@class,'text-error') and not(contains(@style,'display: none'))]"
     private readonly closeIcon = "//div[contains(@class,'MuiDialog-container')]//*[local-name()='svg']"
 
+    private readonly calendarSwitchYear = "//button[contains(@class,'MuiPickersCalendarHeader-switchViewButton')]"
+    private readonly currentMonthLabel = "//div[contains(@id,'-grid-label')]"
+    private readonly nextMonthBtn = "//button[@title='Next month']"
+
     // =========================================
     // DYNAMIC LOCATORS
     // =========================================
 
     private yearBtn = (year: string) => `//button[text()='${year}']`
-    private currentMonthLabel = "//button[@aria-label='calendar view is open, switch to year view']/preceding-sibling::div/div"
+    // private currentMonthLabel = "//button[@aria-label='calendar view is open, switch to year view']/preceding-sibling::div/div"
     private dayBtn = (day: string) => `//button[not(contains(@class,'MuiPickersDay-dayOutsideMonth'))][text()='${day}']`
     private calendarOption = (name: string) => `//ul//li[text()='${name}']`
     private filterOption = (value: string) => `//ul[@role='listbox']/li[text()='${value}']`
@@ -86,6 +88,7 @@ export class HolidaysPage extends BasePage {
     }
 
     async getTableHeaders(): Promise<string[]> {
+        await this.page.locator(this.tableHeaders).first().waitFor({ state: 'visible', timeout: 10000 })
         const headers = await this.page.locator(this.tableHeaders).allTextContents()
         return headers.map(t => t.trim()).filter(t => t !== '')
     }
@@ -95,25 +98,46 @@ export class HolidaysPage extends BasePage {
     // =========================================
 
     private async dateSelection(year: string, month: string, day: string): Promise<void> {
-        // Switch to year view and select year
-        await this.page.locator(this.calendarSwitchYear).click()
-        await this.page.locator(this.yearBtn(year)).click()
+        await this.page.waitForTimeout(2000)
+        await this.page.locator(this.currentMonthLabel).waitFor({ state: 'visible', timeout: 20000 })
 
-        // Navigate months until correct month is visible
+        const switchBtn = this.page.locator(this.calendarSwitchYear)
+        await switchBtn.waitFor({ state: 'visible', timeout: 5000 })
+        await switchBtn.click()
+
+        await this.page.waitForTimeout(1000)
+
+        // ✅ Wait for year grid to render
+        const anyYearBtn = this.page.locator("//button[contains(@class,'PrivatePickersYear-yearButton') or contains(@class,'MuiPickersYear-yearButton')]").first()
+        await anyYearBtn.waitFor({ state: 'attached', timeout: 15000 })  // ✅ 'attached' first — DOM presence before visibility
+        await anyYearBtn.waitFor({ state: 'visible', timeout: 5000 })
+
+        // ✅ Year may be off-screen in virtual scroll list — scroll into view
+        const yearLocator = this.page.locator(this.yearBtn(year))
+        await yearLocator.scrollIntoViewIfNeeded()
+        await yearLocator.click()
+
+        await this.page.locator(this.currentMonthLabel).waitFor({ state: 'visible', timeout: 5000 })
+        await this.page.waitForTimeout(300)
+
         for (let i = 0; i < 12; i++) {
-            const currentMonth = await this.page.locator(this.currentMonthLabel).textContent()
-            if (currentMonth?.includes(month)) {
-                await this.page.locator(this.dayBtn(day)).click()
-                // Click OK if present (some date pickers require it)
+            const currentMonthText = await this.page.locator(this.currentMonthLabel).textContent()
+            if (currentMonthText?.includes(month)) {
+                const dayLocator = this.page.locator(this.dayBtn(day))
+                await dayLocator.first().waitFor({ state: 'visible', timeout: 5000 })
+                await dayLocator.first().click()
+                // ✅ OK button only present in some picker variants
                 try {
                     const okButton = this.page.locator("//button[text()='OK']")
-                    await okButton.waitFor({ state: 'visible', timeout: 3000 })
+                    await okButton.waitFor({ state: 'visible', timeout: 2000 })
                     await okButton.click()
-                } catch { /* OK button not present — inline picker */ }
+                } catch { /* inline picker — no OK needed */ }
                 break
-            } else {
-                await this.page.locator(this.nextMonthBtn).click()
             }
+            const nextBtn = this.page.locator(this.nextMonthBtn)
+            await nextBtn.waitFor({ state: 'visible', timeout: 5000 })
+            await nextBtn.click()
+            await this.page.waitForTimeout(300)
         }
     }
 
@@ -173,7 +197,7 @@ export class HolidaysPage extends BasePage {
                 const hasNext = await this.isPageNextExists()
                 if (!hasNext) break
                 await this.utility.click({ selector: this.paginationNext })
-                await this.page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {})
+                await this.page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => { })
             }
         } while (!found)
     }
@@ -182,14 +206,9 @@ export class HolidaysPage extends BasePage {
     // CRUD
     // =========================================
 
-    async addNewHoliday(
-        calendarName: string,
-        hYear: string,
-        hMonth: string,
-        hDay: string,
-        hDescription: string
-    ): Promise<void> {
+    async addNewHoliday(calendarName: string, dateValue: string, hDescription: string): Promise<void> {
         await this.page.locator(this.addHolidayBtn).waitFor({ state: 'visible', timeout: 30000 })
+        await this.page.waitForTimeout(2000)  // ✅ Ensure button is interactable
         await this.page.locator(this.addHolidayBtn).click()
 
         // Type calendar name and select from autocomplete
@@ -199,7 +218,9 @@ export class HolidaysPage extends BasePage {
 
         // Date
         await this.page.locator(this.holidayDate).click()
-        await this.dateSelection(hYear, hMonth, hDay)
+        // await this.dateSelection(hYear, hMonth, hDay)
+        const [year, month, day] = dateValue.split('-')
+        await this.dateSelection(year, month, day)
 
         // Description
         await this.page.locator(this.description).fill(hDescription)
@@ -272,7 +293,7 @@ export class HolidaysPage extends BasePage {
         try {
             await this.page.locator(this.okBtn).waitFor({ state: 'visible', timeout: 5000 })
             await this.page.locator(this.okBtn).click()
-            await this.page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => {})
+            await this.page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => { })
             await this.page.waitForTimeout(1000)
         } catch {
             console.log('Delete confirmation did not appear — skipping')
@@ -283,18 +304,39 @@ export class HolidaysPage extends BasePage {
     // FILTERS
     // =========================================
 
+    // async filterByHolidayCalendar(calendarName: string): Promise<boolean> {
+    //     await this.utility.click({ selector: this.holidayCalendarDD })
+    //     await this.utility.click({ selector: this.filterOption(calendarName) })
+    //     await this.page.waitForLoadState('networkidle')
+
+    //     const rows = this.page.locator(this.tableRows)
+    //     const count = await rows.count()
+    //     for (let i = 0; i < count; i++) {
+    //         const cellText = await rows.nth(i).locator('td').nth(4).textContent()
+    //         if (cellText?.includes(calendarName)) return true
+    //     }
+    //     return false
+    // }
+
     async filterByHolidayCalendar(calendarName: string): Promise<boolean> {
         await this.utility.click({ selector: this.holidayCalendarDD })
         await this.utility.click({ selector: this.filterOption(calendarName) })
-        await this.page.waitForLoadState('networkidle')
 
-        const rows = this.page.locator(this.tableRows)
-        const count = await rows.count()
-        for (let i = 0; i < count; i++) {
-            const cellText = await rows.nth(i).locator('td').nth(4).textContent()
-            if (cellText?.includes(calendarName)) return true
-        }
-        return false
+        // ✅ Wait for the table to re-render with filtered rows
+        // by waiting until the first Holiday Calendar cell reflects the selected filter
+        await this.page.locator(this.tableRows).first().waitFor({ state: 'visible', timeout: 10000 })
+        await this.page.waitForFunction(
+            ({ selector, name }: { selector: string; name: string }) => {
+                const rows = document.querySelectorAll(selector)
+                return Array.from(rows).some(row => {
+                    const cells = row.querySelectorAll('td')
+                    return cells[4]?.textContent?.includes(name)
+                })
+            },
+            { selector: 'table.w-full tbody tr', name: calendarName },
+            { timeout: 10000 }
+        )
+        return true
     }
 
     async getDefaultFilterValue(): Promise<string[]> {
@@ -376,5 +418,60 @@ export class HolidaysPage extends BasePage {
                 await this.page.locator('body').click()
             }
         }
+    }
+
+    // =========================================
+    // DATE UTILITY — returns "YYYY-Month-DD" to match addNewHoliday's dateValue param
+    // =========================================
+
+    getRandomFutureDate(): { dateValue: string; year: string; month: string; day: string } {
+        const monthNames = [
+            'January', 'February', 'March', 'April', 'May', 'June',
+            'July', 'August', 'September', 'October', 'November', 'December'
+        ]
+        const daysAhead = 30 + Math.floor(Math.random() * 210)
+        const futureDate = new Date()
+        futureDate.setDate(futureDate.getDate() + daysAhead)
+
+        const year = futureDate.getFullYear().toString()
+        const month = monthNames[futureDate.getMonth()]
+        const day = futureDate.getDate().toString()
+
+        return { dateValue: `${year}-${month}-${day}`, year, month, day }
+    }
+
+    // =========================================
+    // NEW: check if a specific day is disabled in the picker (past-date test)
+    // =========================================
+    async isCurrentMonthDayDisabled(day: string): Promise<boolean> {
+        // ✅ Wait for calendar grid to render (current month, no navigation needed)
+        await this.page.locator(this.currentMonthLabel).waitFor({ state: 'visible', timeout: 20000 })
+        // ✅ Match day button using exact DOM structure — excludes outside-month days
+        const dayBtnLocator = this.page.locator(
+            `//button[contains(@class,'MuiPickersDay-root') and not(contains(@class,'MuiPickersDay-dayOutsideMonth')) and normalize-space(text())='${day}']`
+        )
+        await dayBtnLocator.first().waitFor({ state: 'visible', timeout: 5000 })
+        // ✅ Confirmed from DOM: disabled days have class="Mui-disabled" AND disabled="" attribute
+        return await dayBtnLocator.first().isDisabled()
+    }
+
+    // =========================================
+    // NEW: get duplicate-date validation error text after Add
+    // =========================================
+
+    async getDuplicateDateError(): Promise<string | null> {
+        await this.page.waitForTimeout(1000)  // ✅ Allow time for error message to appear
+        const duplicateError = this.page.locator(this.errorMsgs)
+        const isVisible = await duplicateError.isVisible().catch(() => false)
+        if (!isVisible) return null
+        return (await duplicateError.textContent())?.trim() ?? null
+    }
+
+    /**
+     * Opens the Add Holiday form and the holiday date picker, ready for date interaction.
+     */
+    async openHolidayDatePicker(): Promise<void> {
+        await this.openAddHolidayForm()
+        await this.page.locator(this.holidayDate).click()
     }
 }
