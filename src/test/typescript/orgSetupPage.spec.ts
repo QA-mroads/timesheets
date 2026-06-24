@@ -192,3 +192,23 @@ test('Reset Disables Button Test', async ({ orgSetup }) => {
     const isEnabled = await orgSetup.isResetEnabled()
     expect(isEnabled).toBeFalsy()
 })
+
+/**
+ * Duplicate Leave Type Name Validation Test
+ */
+test('Duplicate Leave Type Name Validation Test', async ({ orgSetup }) => {
+    const existingLeaveTypeName = 'Sick Leave'
+    await orgSetup.addLeaveType(existingLeaveTypeName, '5', 'SL', '#0e1213')
+    const errors = await orgSetup.getAllValidationMessages()
+    expect(errors).toContain(`LeaveType ${existingLeaveTypeName} already exists`)
+})
+
+/**
+ * Duplicate Leave Type Color code Validation Test
+ */
+test('Duplicate Leave Type Color Code Validation Test', async ({ orgSetup }) => {
+    const existingLeaveColor = '#9B88FF'
+    await orgSetup.addLeaveType('Auto Test Color', '5', 'ATC', existingLeaveColor)  // same color as Sick Leave
+    const errors = await orgSetup.getAllValidationMessages()
+    expect(errors).toContain(`Color ${existingLeaveColor.toLowerCase()} already assigned to another Leave.`)
+})

@@ -37,12 +37,12 @@ const config: PlaywrightTestConfig = {
     /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
     use: {
         /* Maximum time each action such as `click()` can take. Defaults to 0 (no limit). */
-        actionTimeout: 0,
-        screenshot: 'on',
-        trace: 'on',
+        actionTimeout: 15000,
+        screenshot: 'only-on-failure',
+        trace: 'retain-on-failure',
         acceptDownloads: true,
         permissions: ['clipboard-read', 'clipboard-write', 'notifications', 'camera', 'microphone'],
-        video: 'on',
+        video: 'retain-on-failure',
     },
 
     /* Configure projects for major browsers */
@@ -77,7 +77,9 @@ const config: PlaywrightTestConfig = {
                 'timesheetsSettingsPage*.spec.ts',
                 'orgSetupPage*.spec.ts',
                 'holidaysPage*.spec.ts',
-                'projectsPage*.spec.ts'],
+                'projectsPage*.spec.ts',
+                'activitesPage*.spec.ts',
+                'clientsPage*.spec.ts'],
             dependencies: ['panna-auth-setup'],
             use: {
                 channel: 'chromium',
@@ -95,29 +97,51 @@ const config: PlaywrightTestConfig = {
         // =====================================
         // MICROSOFT EDGE
         // =====================================
-        {
-            name: 'panna-timesheets-edge',
-            testDir: './src/test/typescript',
-            testMatch: ['timesheetsPage*.spec.ts',
-                'pannaHomePage*.spec.ts',
-                'timesheetsSettingsPage*.spec.ts',
-                'orgSetupPage*.spec.ts',
-                'holidaysPage*.spec.ts',
-                'projectsPage*.spec.ts'
-            ],
-            dependencies: ['panna-auth-setup'],
-            use: {
-                channel: 'msedge',
-                storageState: './src/auth/user.json',
-                acceptDownloads: true,
-                headless: isHeadless,
-                viewport: isHeadless ? { width: 1920, height: 1080 } : null,
-                deviceScaleFactor: isHeadless ? 1 : undefined,
-                launchOptions: {
-                    args: isHeadless ? ['--window-size=1920,1080'] : ['--start-maximized'],
-                },
-            },
-        },
+        // {
+        //     name: 'panna-timesheets-edge',
+        //     testDir: './src/test/typescript',
+        //     testMatch: ['timesheetsPage*.spec.ts',
+        //         'pannaHomePage*.spec.ts',
+        //         'timesheetsSettingsPage*.spec.ts',
+        //         'orgSetupPage*.spec.ts',
+        //         'holidaysPage*.spec.ts',
+        //         'projectsPage*.spec.ts'
+        //     ],
+        //     dependencies: ['panna-auth-setup'],
+        //     use: {
+        //         channel: 'msedge',
+        //         storageState: './src/auth/user.json',
+        //         acceptDownloads: true,
+        //         headless: isHeadless,
+        //         viewport: isHeadless ? { width: 1920, height: 1080 } : null,
+        //         deviceScaleFactor: isHeadless ? 1 : undefined,
+        //         launchOptions: {
+        //             args: isHeadless ? ['--window-size=1920,1080'] : ['--start-maximized'],
+        //         },
+        //     },
+        // },
+
+        // {
+        //     name: 'panna-timesheets-webkit',
+        //     testDir: './src/test/typescript',
+        //     testMatch: ['timesheetsPage*.spec.ts',
+        //         'pannaHomePage*.spec.ts',
+        //         'timesheetsSettingsPage*.spec.ts',
+        //         'orgSetupPage*.spec.ts',
+        //         'holidaysPage*.spec.ts',
+        //         'projectsPage*.spec.ts'
+        //     ],
+        //     dependencies: ['panna-auth-setup'],
+        //     use: {
+        //         browserName: 'webkit',
+        //         storageState: './src/auth/user.json',
+        //         acceptDownloads: true,
+        //         headless: isHeadless,
+        //         viewport: { width: 1920, height: 1080 }, // ✅ WebKit needs explicit viewport even when "maximized" is desired
+        //         deviceScaleFactor: isHeadless ? 1 : undefined,
+        //         // ❌ no launchOptions.args for window sizing — WebKit doesn't support --start-maximized
+        //     },
+        // },
 
     ],
 }

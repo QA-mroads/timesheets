@@ -9,6 +9,8 @@ import { TimesheetsSettingsPage } from '../pages/TimesheetsSettingsPage'
 import { OrgSetupPage } from '../pages/OrgsetupPage'
 import { HolidaysPage } from '../pages/HolidaysPage'
 import { ProjectsPage } from '../pages/ProjectsPage'
+import { ActivityPage } from '../pages/ActivityPage'
+import { ClientsPage } from '../pages/ClientsPage'
 
 /**
  * Declare the Pages that you want to use in your test
@@ -23,6 +25,8 @@ type MyFixtures = {
     orgSetup: OrgSetupPage
     holidaysPage: HolidaysPage
     projectsPage: ProjectsPage
+    activityPage: ActivityPage
+    clientsPage: ClientsPage
 }
 
 /**
@@ -56,6 +60,12 @@ export const test = base.extend<MyFixtures>({
     },
     projectsPage: async ({ page }, use) => {
         return await use(new ProjectsPage(page))
+    },
+    activityPage: async ({ page }, use) => {
+        return await use(new ActivityPage(page))
+    },
+    clientsPage: async ({ page }, use) => {
+        return await use(new ClientsPage(page))
     }
 })
 export { expect } from '@playwright/test'
