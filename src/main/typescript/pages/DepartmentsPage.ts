@@ -1,47 +1,46 @@
 import { Page } from '@playwright/test'
 import { BasePage } from '../base/BasePage'
 
-export class ActivityPage extends BasePage {
+export class DepartmentsPage extends BasePage {
 
     // =========================================
     // LOCATORS
     // =========================================
 
-    private readonly addNewActivityBtn = "//button[text()='Add New Activity']"
-    private readonly selDepartment = "//form//div[@role='button']"
-    private readonly activityNameField = "//input[@placeholder='Activity Name']"
+    private readonly addNewDepartmentBtn = "//button[text()='Add New Department']"
+    private readonly departmentNameField = "//input[@placeholder='Department Name']"
+    private readonly descriptionField = "//textarea[@placeholder='Description']"
     private readonly addBtn = "//button[text()='Add']"
-    private readonly cnfmPromptOkBtn = "//button[text()='Ok']"
-    private readonly successMsg = "//div//h2"
-    private readonly okBtn = "//button[text()='OK']"
-    private readonly updateBtn = "//button[text()='Update']"
 
+    private readonly successMsg = "//div//h2"
     private readonly errorMsg = "//div[@class='text-error text-xs']"
     private readonly closeBtn = "//div[@class='absolute text-right mr-2 right-2 top-2']//*[local-name()='svg' and @class='cursor-pointer']"
 
-    private readonly activityListName = "//tbody//td[3]"
+    private readonly resetBtn = "//button[text()='Reset']"
+
     private readonly paginationNext = "//*[local-name()='svg' and @class='-rotate-90 cursor-pointer']"
 
     private readonly table = 'table.w-full'
     private readonly tableHeaders = 'table.w-full th'
     private readonly tableRows = 'table.w-full tbody tr'
 
+    private readonly departmentListName = "//tbody//td[3]"
     private readonly searchBar = '#input-with-icon-textfield'
+    private readonly okBtn = "//button[text()='OK']"
+    private readonly updateBtn = "//button[text()='Update']"
 
     // =========================================
-    // LOCATORS for validation/reset
+    // LOCATORS — additions for validation
     // =========================================
 
     private readonly errorMsgs = "//div[contains(@class,'text-error') and not(contains(@style,'display: none'))]"
-    private readonly resetBtn = "//button[@data-testid='add-activity/reset']" // ✅ verify actual data-testid in your app
-    private readonly modalDialog = "//div[@role='dialog']"
+    private readonly formContainer = "//div[@role='dialog']" // ✅ verify actual modal wrapper class in your app
     private readonly closeIcon = "//div[@role='dialog']//*[local-name()='svg']"
 
     // =========================================
     // DYNAMIC LOCATORS
     // =========================================
 
-    private departmentOption = (departmentName: string) => `//ul//li[text()='${departmentName}']`
     private rowByName = (name: string) => `//tbody//td[text()='${name}']//parent::tr`
     private editBtnByName = (name: string) => `(//tbody//td[text()='${name}']//parent::tr//*[local-name()='svg'])[position()=1]`
     private deleteBtnByName = (name: string) => `(//tbody//td[text()='${name}']//parent::tr//*[local-name()='svg'])[position()=2]`
@@ -54,17 +53,17 @@ export class ActivityPage extends BasePage {
     // PAGE INFO
     // =========================================
 
-    async getActivityPageTitle(): Promise<string> {
+    async getDepartmentsPageTitle(): Promise<string> {
         await this.page.waitForFunction(
             (text) => document.title.includes(text),
-            'Activities',
+            'Departments',
             { timeout: 30000 }
         )
         return await this.page.title()
     }
 
-    async getActivityPageUrl(): Promise<string> {
-        await this.page.waitForURL('**/activities**', { timeout: 30000 })
+    async getDepartmentsPageUrl(): Promise<string> {
+        await this.page.waitForURL('**/departments**', { timeout: 30000 })
         return this.page.url()
     }
 
@@ -95,7 +94,7 @@ export class ActivityPage extends BasePage {
         const headers = await this.page.locator(this.tableHeaders).allTextContents()
         return headers.map(t => t.trim()).filter(t => t !== '')
     }
-    
+
     // =========================================
     // SUCCESS / ERROR MESSAGE
     // =========================================
@@ -135,13 +134,13 @@ export class ActivityPage extends BasePage {
         }
     }
 
-    async searchActivity(name: string): Promise<void> {
+    async searchDepartment(name: string): Promise<void> {
         let found = false
         let maxPages = 20 // ✅ hard limit to prevent infinite loop
 
         do {
-            await this.page.locator(this.activityListName).first().waitFor({ state: 'visible', timeout: 10000 })
-            const elements = await this.page.locator(this.activityListName).all()
+            await this.page.locator(this.departmentListName).first().waitFor({ state: 'visible', timeout: 10000 })
+            const elements = await this.page.locator(this.departmentListName).all()
             for (const element of elements) {
                 const text = await element.textContent()
                 if (text?.includes(name)) {
@@ -158,57 +157,49 @@ export class ActivityPage extends BasePage {
             }
         } while (!found)
 
-        if (!found) console.warn(`Activity "${name}" not found in any page`)
+        if (!found) console.warn(`Department "${name}" not found in any page`)
     }
 
     // =========================================
     // CRUD
     // =========================================
 
-    async addActivity(departmentName: string, actName: string, doAdd: boolean): Promise<void> {
-        await this.page.waitForTimeout(2000)
-        const addBtnLocator = this.page.locator(this.addNewActivityBtn)
+    async addNewDepartment(deptName: string, deptDescription: string): Promise<void> {
+        const addBtnLocator = this.page.locator(this.addNewDepartmentBtn)
         await addBtnLocator.waitFor({ state: 'visible', timeout: 30000 })
         await addBtnLocator.click()
 
-        const deptDD = this.page.locator(this.selDepartment)
-        await deptDD.waitFor({ state: 'visible', timeout: 30000 })
-        await deptDD.click()
+        const nameField = this.page.locator(this.departmentNameField)
+        await nameField.waitFor({ state: 'visible', timeout: 30000 })
+        await nameField.fill(deptName)
 
-        await this.utility.click({ selector: this.departmentOption(departmentName) })
-        await this.page.locator(this.activityNameField).fill(actName)
-        if (doAdd) {
-            await this.utility.click({ selector: this.addBtn })
-            // ✅ Confirmation prompt may not always appear — guard with try/catch + short timeout
-            try {
-                await this.page.locator(this.cnfmPromptOkBtn).waitFor({ state: 'visible', timeout: 5000 })
-                await this.page.locator(this.cnfmPromptOkBtn).click()
-            } catch {
-                console.log('Confirmation prompt did not appear — skipping')
-            }
-
-        }
-
+        await this.page.locator(this.descriptionField).fill(deptDescription)
+        await this.utility.click({ selector: this.addBtn })
+        // ✅ No confirmation prompt for this page (per original Java source — Add goes through directly)
     }
 
-    async editActivity(activityName: string, updatedFields: Map<string, string>): Promise<void> {
-        const row = this.page.locator(this.rowByName(activityName))
+    async editDepartment(deptName: string, updatedFields: Map<string, string>): Promise<void> {
+        const row = this.page.locator(this.rowByName(deptName))
         await row.waitFor({ state: 'visible', timeout: 10000 })
         await row.hover()
         await this.page.waitForTimeout(500) // ✅ hover settle before SVG dispatch
 
-        const editBtn = this.page.locator(this.editBtnByName(activityName))
+        const editBtn = this.page.locator(this.editBtnByName(deptName))
         await editBtn.dispatchEvent('click') // ✅ no waitFor visible — hover-revealed icon
+        await this.page.waitForTimeout(1000) // ✅ kept from original Thread.sleep(3000) → reduced, networkidle covers most of it
 
         for (const [fieldName, value] of updatedFields.entries()) {
             switch (fieldName) {
                 case 'Department Name': {
-                    await this.utility.click({ selector: this.selDepartment })
-                    await this.utility.click({ selector: this.departmentOption(value) })
+                    const field = this.page.locator(this.departmentNameField)
+                    await field.click()
+                    await field.selectText()
+                    await field.press('Delete')
+                    await field.fill(value)
                     break
                 }
-                case 'Activity Name': {
-                    const field = this.page.locator(this.activityNameField)
+                case 'Description': {
+                    const field = this.page.locator(this.descriptionField)
                     await field.click()
                     await field.selectText()
                     await field.press('Delete')
@@ -221,15 +212,10 @@ export class ActivityPage extends BasePage {
         }
 
         await this.utility.click({ selector: this.updateBtn })
-        try {
-            await this.page.locator(this.cnfmPromptOkBtn).waitFor({ state: 'visible', timeout: 5000 })
-            await this.page.locator(this.cnfmPromptOkBtn).click()
-        } catch {
-            console.log('Confirmation prompt did not appear — skipping')
-        }
+        // ✅ No confirmation prompt for this page either
     }
 
-    async deleteActivity(name: string): Promise<void> {
+    async deleteDepartment(name: string): Promise<void> {
         const row = this.page.locator(this.rowByName(name))
         await row.waitFor({ state: 'visible', timeout: 10000 })
         await row.hover()
@@ -249,13 +235,34 @@ export class ActivityPage extends BasePage {
     }
 
     // =========================================
+    // RESET
+    // =========================================
+
+    async resetDepartment(deptName: string, deptDescription: string): Promise<void> {
+        const addBtnLocator = this.page.locator(this.addNewDepartmentBtn)
+        await addBtnLocator.waitFor({ state: 'visible', timeout: 30000 })
+        await addBtnLocator.click()
+
+        const nameField = this.page.locator(this.departmentNameField)
+        await nameField.waitFor({ state: 'visible', timeout: 30000 })
+        await nameField.fill(deptName)
+
+        await this.page.locator(this.descriptionField).fill(deptDescription)
+        await this.utility.click({ selector: this.resetBtn })
+    }
+
+    async isDepartmentNameEmpty(): Promise<string> {
+        return await this.page.locator(this.departmentNameField).inputValue()
+    }
+
+    // =========================================
     // SEARCH
     // =========================================
 
     async doSearch(searchValue: string): Promise<boolean> {
         await this.page.locator(this.searchBar).fill(searchValue)
         await this.page.waitForLoadState('networkidle', { timeout: 5000 }).catch(() => { })
-        await this.page.waitForTimeout(1000) // ✅ debounce settle (reduced from 3000ms)
+        await this.page.waitForTimeout(1000) // ✅ debounce settle (reduced from 4000ms)
 
         const rows = this.page.locator(this.tableRows)
         const count = await rows.count()
@@ -266,12 +273,14 @@ export class ActivityPage extends BasePage {
         return false
     }
 
+    
+
     // =========================================
     // FORM VALIDATION METHODS
     // =========================================
 
-    async openAddActivityForm(): Promise<void> {
-        const btn = this.page.locator(this.addNewActivityBtn)
+    async openAddDepartmentForm(): Promise<void> {
+        const btn = this.page.locator(this.addNewDepartmentBtn)
         await btn.waitFor({ state: 'visible', timeout: 30000 })
         await btn.click()
     }
@@ -280,18 +289,22 @@ export class ActivityPage extends BasePage {
         await this.utility.click({ selector: this.addBtn })
     }
 
-    async getActivityValidationErrors(): Promise<string[]> {
+    async getDepartmentValidationErrors(): Promise<string[]> {
         const elements = this.page.locator(this.errorMsgs)
         await elements.first().waitFor({ state: 'visible', timeout: 10000 })
         const texts = await elements.allTextContents()
         return texts.map(t => t.trim())
     }
 
-    async enterActivityNameOnly(name: string): Promise<void> {
-        const field = this.page.locator(this.activityNameField)
+    async enterDepartmentNameOnly(name: string): Promise<void> {
+        const field = this.page.locator(this.departmentNameField)
         await field.fill(name)
         await field.press('Tab') // trigger blur/validation
     }
+
+    // =========================================
+    // RESET BUTTON ENABLE/DISABLE CHECK
+    // =========================================
 
     async isResetEnabled(): Promise<boolean> {
         const btn = this.page.locator(this.resetBtn)
@@ -299,26 +312,21 @@ export class ActivityPage extends BasePage {
         return await btn.isEnabled()
     }
 
-    async clickReset(): Promise<void> {
-        const btn = this.page.locator(this.resetBtn)
-        await btn.waitFor({ state: 'visible', timeout: 10000 })
-        await btn.click()
-    }
-
     async isFormCleared(): Promise<boolean> {
-        const nameVal = await this.page.locator(this.activityNameField).inputValue()
-        return nameVal === ''
+        const nameVal = await this.page.locator(this.departmentNameField).inputValue()
+        const descVal = await this.page.locator(this.descriptionField).inputValue()
+        return nameVal === '' && descVal === ''
     }
 
     // =========================================
     // MODAL CLOSE METHODS
     // =========================================
 
-    async isAddActivityFormClosed(): Promise<boolean> {
-        return await this.page.locator(this.modalDialog).count() === 0
+    async isAddDepartmentFormClosed(): Promise<boolean> {
+        return await this.page.locator(this.formContainer).count() === 0
     }
 
-    async closeAddActivityForm(): Promise<void> {
+    async closeAddDepartmentForm(): Promise<void> {
         try {
             const icon = this.page.locator(this.closeIcon)
             await icon.waitFor({ state: 'visible', timeout: 5000 })
@@ -337,10 +345,10 @@ export class ActivityPage extends BasePage {
         await this.page.locator('body').click()
     }
 
-    async safelyCloseAddActivityForm(): Promise<void> {
+    async safelyCloseAddDepartmentForm(): Promise<void> {
         if (this.page.isClosed()) return
         try {
-            await this.closeAddActivityForm()
+            await this.closeAddDepartmentForm()
         } catch {
             try {
                 await this.pressEscape()
@@ -348,5 +356,33 @@ export class ActivityPage extends BasePage {
                 await this.clickOutsideModal()
             }
         }
+    }
+
+    // =========================================
+    // NEW: get duplicate-field validation error
+    // =========================================
+
+    async getDuplicateFieldError(): Promise<string[]> {
+        const errors = await this.getDepartmentValidationErrors()
+        return errors.filter(err => err.toLowerCase().includes('already exist'))
+    }
+
+    // =========================================
+    // NEW: fill form without submitting confirmation
+    // (useful for validation tests where Add itself triggers an error, not success)
+    // =========================================
+
+    async fillAddDepartmentForm(deptName: string, deptDescription: string): Promise<void> {
+        const addBtnLocator = this.page.locator(this.addNewDepartmentBtn)
+        await addBtnLocator.waitFor({ state: 'visible', timeout: 30000 })
+        await addBtnLocator.click()
+
+        const nameField = this.page.locator(this.departmentNameField)
+        await nameField.waitFor({ state: 'visible', timeout: 30000 })
+        await nameField.fill(deptName)
+
+        await this.page.locator(this.descriptionField).fill(deptDescription)
+        await this.utility.click({ selector: this.addBtn })
+        // ✅ No success-prompt wait — caller checks for validation error instead
     }
 }

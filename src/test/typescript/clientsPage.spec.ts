@@ -37,7 +37,7 @@ test.beforeEach(async ({ pannaHomePage, timesheetsPage, timesheetsSettingsPage, 
     await timesheetsPage.goToSettingsTab()
     await timesheetsSettingsPage.goToOrgSetup()
     await orgSetup.goToClients()
-    await clientsPage.isTableExists()
+    await clientsPage.isTableDisplayed()
 })
 
 // =========================================

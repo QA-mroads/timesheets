@@ -79,7 +79,9 @@ const config: PlaywrightTestConfig = {
                 'holidaysPage*.spec.ts',
                 'projectsPage*.spec.ts',
                 'activitesPage*.spec.ts',
-                'clientsPage*.spec.ts'],
+                'clientsPage*.spec.ts',
+                'departmentsPage*.spec.ts',
+                'countriesPage*.spec.ts'],
             dependencies: ['panna-auth-setup'],
             use: {
                 channel: 'chromium',

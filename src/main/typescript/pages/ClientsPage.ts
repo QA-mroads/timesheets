@@ -75,17 +75,30 @@ export class ClientsPage extends BasePage {
     // TABLE
     // =========================================
 
+    async isTableDisplayed(): Promise<void> {
+        // ✅ Wait for the table container itself to attach to DOM first
+        await this.page.locator(this.table).waitFor({ state: 'attached', timeout: 30000 })
+        // ✅ Then wait for actual rows to render — table container can exist before data loads
+        await this.page.locator(this.tableRows).first().waitFor({ state: 'visible', timeout: 30000 })
+    }
+
     async isTableExists(): Promise<boolean> {
-        return await this.page.locator(this.clientsListName).first().waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false)
+        try {
+            await this.page.locator(this.table).waitFor({ state: 'visible', timeout: 30000 })
+            await this.page.locator(this.tableRows).first().waitFor({ state: 'visible', timeout: 30000 })
+            return true
+        } catch {
+            return false
+        }
     }
 
     async getTableHeaders(): Promise<string[]> {
-        // ✅ Wait for th elements specifically, not just the table container
-        await this.page.locator(this.tableHeaders).first().waitFor({ state: 'visible', timeout: 10000 })
+        // ✅ Wait for headers specifically — they can render before/after rows depending on data fetch timing
+        await this.page.locator(this.tableHeaders).first().waitFor({ state: 'visible', timeout: 30000 })
         const headers = await this.page.locator(this.tableHeaders).allTextContents()
         return headers.map(t => t.trim()).filter(t => t !== '')
     }
-
+    
     // =========================================
     // SUCCESS / ERROR MESSAGE
     // =========================================

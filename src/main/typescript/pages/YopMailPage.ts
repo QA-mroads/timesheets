@@ -12,51 +12,28 @@ export class YopMailPage extends BasePage {
      * Login Through YopMail
      */
     async mailLogin(userName: string) {
+        const yopmailPage = await this.page.context().newPage()
+        await yopmailPage.goto('https://yopmail.com/')
 
-    const yopmailPage =
-        await this.page.context().newPage()
+        const before = Date.now()
+        console.log('⏱️ Starting 15s wait at:', new Date(before).toISOString())
 
-    await yopmailPage.goto('https://yopmail.com/')
+        await yopmailPage.waitForTimeout(15000)
 
-    await yopmailPage.locator(this.emailInput)
-        .fill(userName)
+        const after = Date.now()
+        console.log('⏱️ Wait ended at:', new Date(after).toISOString())
+        console.log('⏱️ Actual elapsed ms:', after - before)
 
-    await yopmailPage.waitForTimeout(7000)
-
-    await yopmailPage.locator(this.proceedBtn)
-        .click()
-
-    const frame =
-        yopmailPage.frameLocator('iframe#ifmail')
-
-    const signInLink =
-        frame.locator("//a[contains(.,'Sign In')]")
-
-    await signInLink.waitFor({
-        state: 'visible',
-        timeout: 60000
-    })
-
-    // Capture NEW authenticated page
-    const [dashboardPage] =
-        await Promise.all([
-
-            this.page.context().waitForEvent('page'),
-
-            signInLink.click()
-        ])
-
-    await dashboardPage.waitForLoadState(
-        'networkidle'
-    )
-
-    console.log(
-        'Dashboard URL:',
-        await dashboardPage.url()
-    )
-
-    return dashboardPage
-}
+        await yopmailPage.locator(this.emailInput).fill(userName)
+        await yopmailPage.locator(this.proceedBtn).click()
+        const frame = yopmailPage.frameLocator(this.mailFrame)
+        const signInLink = frame.locator(this.signInLink)
+        await signInLink.waitFor({ state: 'visible', timeout: 60000 })
+        const [dashboardPage] = await Promise.all([this.page.context().waitForEvent('page'), signInLink.click()])
+        await dashboardPage.waitForLoadState('networkidle')
+        console.log('Dashboard URL:', await dashboardPage.url())
+        return dashboardPage
+    }
     /**
      * Remove Advertisement Iframes
      */

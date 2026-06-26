@@ -37,8 +37,9 @@ export class OrgSetupPage extends BasePage {
     private readonly tableRows = 'table.w-full tbody tr'
     private readonly leaveTypeListName = "//tbody//td[3]/div/div"
 
-    // Pagination
-    private readonly paginationNext = "//*[local-name()='svg' and @class='-rotate-90 cursor-pointer']"
+    // ✅ More reliable — use data-testid instead of exact class string matching
+    private readonly paginationNext = "[data-testid='pagination-next']"
+    private readonly paginationPrev = "[data-testid='pagination-prev']"
 
     // Close / Modal
     private readonly closeBtn = "//div[@class='absolute text-right mr-2 right-2 top-2']//*[local-name()='svg' and @class='cursor-pointer']"
@@ -100,16 +101,27 @@ export class OrgSetupPage extends BasePage {
     // =========================================
 
     async isTableDisplayed(): Promise<void> {
-        await this.page.locator(this.table).waitFor({ state: 'visible', timeout: 30000 })
+        // ✅ Wait for the table container itself to attach to DOM first
+        await this.page.locator(this.table).waitFor({ state: 'attached', timeout: 30000 })
+        // ✅ Then wait for actual rows to render — table container can exist before data loads
+        await this.page.locator(this.tableRows).first().waitFor({ state: 'visible', timeout: 30000 })
     }
 
     async isTableExists(): Promise<boolean> {
-        return await this.page.locator(this.table).isVisible()
+        try {
+            await this.page.locator(this.table).waitFor({ state: 'visible', timeout: 30000 })
+            await this.page.locator(this.tableRows).first().waitFor({ state: 'visible', timeout: 30000 })
+            return true
+        } catch {
+            return false
+        }
     }
 
     async getTableHeaders(): Promise<string[]> {
+        // ✅ Wait for headers specifically — they can render before/after rows depending on data fetch timing
+        await this.page.locator(this.tableHeaders).first().waitFor({ state: 'visible', timeout: 30000 })
         const headers = await this.page.locator(this.tableHeaders).allTextContents()
-        return headers.map(text => text.trim()).filter(text => text !== '')
+        return headers.map(t => t.trim()).filter(t => t !== '')
     }
 
     // =========================================
@@ -117,41 +129,41 @@ export class OrgSetupPage extends BasePage {
     // =========================================
 
     async getSuccessMsg(): Promise<string> {
-    // ✅ Guard against closed page
-    if (this.page.isClosed()) return 'Failed Process'
+        // ✅ Guard against closed page
+        if (this.page.isClosed()) return 'Failed Process'
 
-    try {
-        const successLocator = this.page.locator(this.successMsg)
-        await successLocator.waitFor({ state: 'visible', timeout: 10000 })
-        const text = await successLocator.innerText()
-        console.log(text)
-        await this.page.waitForTimeout(2000)
-        return text
-    } catch {
-        if (this.page.isClosed()) return 'Failed Process'  // ✅ guard here too
         try {
-            const errorText = await this.page.locator(this.errorMsg).innerText()
-            console.log(errorText)
-            await this.utility.click({ selector: this.closeBtn })
-            return errorText
+            const successLocator = this.page.locator(this.successMsg)
+            await successLocator.waitFor({ state: 'visible', timeout: 10000 })
+            const text = await successLocator.innerText()
+            console.log(text)
+            await this.page.waitForTimeout(2000)
+            return text
         } catch {
-            return 'Failed Process'  // ✅ removed closeBtn click — page may be closed
+            if (this.page.isClosed()) return 'Failed Process'  // ✅ guard here too
+            try {
+                const errorText = await this.page.locator(this.errorMsg).innerText()
+                console.log(errorText)
+                await this.utility.click({ selector: this.closeBtn })
+                return errorText
+            } catch {
+                return 'Failed Process'  // ✅ removed closeBtn click — page may be closed
+            }
         }
     }
-}
 
     // =========================================
     // PAGINATION
     // =========================================
 
     async isPageNextExists(): Promise<boolean> {
-        try {
-            const locator = this.page.locator(this.paginationNext)
-            await locator.waitFor({ state: 'visible', timeout: 5000 })
-            return await locator.isVisible()
-        } catch {
-            return false
-        }
+        const nextBtn = this.page.locator(this.paginationNext)
+        const exists = await nextBtn.count() > 0
+        if (!exists) return false
+
+        // ✅ Check if it's disabled via the opacity-50 class (confirmed from DOM)
+        const classAttr = await nextBtn.getAttribute('class')
+        return !classAttr?.includes('opacity-50')
     }
 
     /**
@@ -159,7 +171,7 @@ export class OrgSetupPage extends BasePage {
      */
     async searchLeaveType(leaveTypeName: string): Promise<void> {
         let found = false
-
+        let maxPages = 20
         do {
             const elements = await this.page.locator(this.leaveTypeListName).all()
             for (const element of elements) {
@@ -169,10 +181,16 @@ export class OrgSetupPage extends BasePage {
                     break
                 }
             }
-            if (!found && await this.isPageNextExists()) {
-                await this.utility.click({ selector: this.paginationNext })
+            if (!found) {
+                const hasNext = await this.isPageNextExists() // ✅ now correctly detects opacity-50 disabled state
+                if (!hasNext || maxPages-- <= 0) break
+                await this.page.locator(this.paginationNext).click()
+                await this.page.waitForTimeout(500) // let next page render
             }
         } while (!found)
+        if (!found) {
+            throw new Error(`Leave type "${leaveTypeName}" not found after searching all pages`)
+        }
     }
 
     // =========================================
@@ -221,73 +239,73 @@ export class OrgSetupPage extends BasePage {
         await cnfmLocator.click()
     }
 
- // ✅ Single method for Edit
-async editLeaveType(leaveTypeName: string, updatedFields: Map<string, string>): Promise<void> {
-    const row = this.page.locator(this.rowByLeaveType(leaveTypeName))
-    await row.waitFor({ state: 'visible', timeout: 10000 })
-    await row.hover()
+    // ✅ Single method for Edit
+    async editLeaveType(leaveTypeName: string, updatedFields: Map<string, string>): Promise<void> {
+        const row = this.page.locator(this.rowByLeaveType(leaveTypeName))
+        await row.waitFor({ state: 'visible', timeout: 10000 })
+        await row.hover()
 
-    // ✅ Wait for the SVG icon to actually appear after hover
-    const editBtn = this.page.locator(this.editBtnByLeaveType(leaveTypeName))
-    await editBtn.waitFor({ state: 'visible', timeout: 5000 })
-    await editBtn.dispatchEvent('click')  // ✅ bypasses hover-state dependency
+        // ✅ Wait for the SVG icon to actually appear after hover
+        const editBtn = this.page.locator(this.editBtnByLeaveType(leaveTypeName))
+        await editBtn.waitFor({ state: 'visible', timeout: 5000 })
+        await editBtn.dispatchEvent('click')  // ✅ bypasses hover-state dependency
 
-    for (const [fieldName, value] of updatedFields.entries()) {
-        let selector: string
-        switch (fieldName) {
-            case 'Leave Name':  selector = this.leaveType;  break
-            case 'Leave Count': selector = this.leaveCount; break
-            case 'Short Code':  selector = this.shortName;  break
-            case 'Color Code':  selector = this.colorCode;  break
-            default: console.log(`Invalid field: ${fieldName}`); continue
+        for (const [fieldName, value] of updatedFields.entries()) {
+            let selector: string
+            switch (fieldName) {
+                case 'Leave Name': selector = this.leaveType; break
+                case 'Leave Count': selector = this.leaveCount; break
+                case 'Short Code': selector = this.shortName; break
+                case 'Color Code': selector = this.colorCode; break
+                default: console.log(`Invalid field: ${fieldName}`); continue
+            }
+            const field = this.page.locator(selector)
+            await field.click()
+            await field.selectText()
+            await field.press('Delete')
+            await field.fill(value)
         }
-        const field = this.page.locator(selector)
-        await field.click()
-        await field.selectText()
-        await field.press('Delete')
-        await field.fill(value)
+
+        await this.utility.click({ selector: this.updateBtn })
+        try {
+            await this.page.locator(this.cnfmPromptOkBtn).waitFor({ state: 'visible', timeout: 5000 })
+            await this.page.locator(this.cnfmPromptOkBtn).click()
+        } catch {
+            console.log('Confirmation prompt did not appear — skipping')
+        }
     }
 
-    await this.utility.click({ selector: this.updateBtn })
-    try {
-        await this.page.locator(this.cnfmPromptOkBtn).waitFor({ state: 'visible', timeout: 5000 })
-        await this.page.locator(this.cnfmPromptOkBtn).click()
-    } catch {
-        console.log('Confirmation prompt did not appear — skipping')
-    }
-}
+    async deleteLeaveType(leaveTypeName: string): Promise<void> {
+        const row = this.page.locator(this.rowByLeaveType(leaveTypeName))
+        await row.waitFor({ state: 'visible', timeout: 10000 })
+        await row.hover()
 
-async deleteLeaveType(leaveTypeName: string): Promise<void> {
-    const row = this.page.locator(this.rowByLeaveType(leaveTypeName))
-    await row.waitFor({ state: 'visible', timeout: 10000 })
-    await row.hover()
+        const deleteBtn = this.page.locator(this.deleteBtnByLeaveType(leaveTypeName))
+        await deleteBtn.waitFor({ state: 'visible', timeout: 5000 })
+        await deleteBtn.dispatchEvent('click')
 
-    const deleteBtn = this.page.locator(this.deleteBtnByLeaveType(leaveTypeName))
-    await deleteBtn.waitFor({ state: 'visible', timeout: 5000 })
-    await deleteBtn.dispatchEvent('click')
+        // // ✅ Wait for the confirm prompt modal to appear
+        // const confirmModal = this.page.locator("//h2[contains(text(),'Are you sure')]")
+        // await confirmModal.waitFor({ state: 'visible', timeout: 5000 })
 
-    // // ✅ Wait for the confirm prompt modal to appear
-    // const confirmModal = this.page.locator("//h2[contains(text(),'Are you sure')]")
-    // await confirmModal.waitFor({ state: 'visible', timeout: 5000 })
+        // // ✅ Click OK only within the confirm modal — avoids locator ambiguity
+        // const okBtn = this.page.locator("//h2[contains(text(),'Are you sure')]/ancestor::div[@role='dialog']//button[text()='OK' or text()='Ok']")
+        // await okBtn.waitFor({ state: 'visible', timeout: 5000 })
+        // await okBtn.click()
+        // ✅ Wait for confirm modal
+        await this.page.waitForTimeout(1000)
 
-    // // ✅ Click OK only within the confirm modal — avoids locator ambiguity
-    // const okBtn = this.page.locator("//h2[contains(text(),'Are you sure')]/ancestor::div[@role='dialog']//button[text()='OK' or text()='Ok']")
-    // await okBtn.waitFor({ state: 'visible', timeout: 5000 })
-    // await okBtn.click()
-    // ✅ Wait for confirm modal
-    await this.page.waitForTimeout(1000)
-
-    // ✅ Debug: log all button texts inside any dialog/modal
-    const allBtns = await this.page.locator("//div[@role='dialog']//button | //div[contains(@class,'modal')]//button | //div[contains(@class,'swal')]//button").all()
-    for (const btn of allBtns) {
-        console.log('Button found in modal:', await btn.textContent())
-    }
+        // ✅ Debug: log all button texts inside any dialog/modal
+        const allBtns = await this.page.locator("//div[@role='dialog']//button | //div[contains(@class,'modal')]//button | //div[contains(@class,'swal')]//button").all()
+        for (const btn of allBtns) {
+            console.log('Button found in modal:', await btn.textContent())
+        }
 
         const okLocator = this.page.locator(this.okBtn)
         await okLocator.waitFor({ state: 'visible', timeout: 30000 })
         await okLocator.click()
         await this.page.waitForTimeout(2000)
-}
+    }
     // async editLeaveType(updatedFields: Map<string, string>): Promise<void> {
     //     for (const [fieldName, value] of updatedFields.entries()) {
     //         switch (fieldName) {
