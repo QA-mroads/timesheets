@@ -13,6 +13,8 @@ import { ActivityPage } from '../pages/ActivityPage'
 import { ClientsPage } from '../pages/ClientsPage'
 import { DepartmentsPage } from '../pages/DepartmentsPage'
 import { CountriesPage } from '../pages/CountriesPage'
+import { ApplyLeavesPage } from '../pages/ApplyLeavesPage'
+import { LeaveHistoryPage } from '../pages/LeaveHistoryPage'
 
 /**
  * Declare the Pages that you want to use in your test
@@ -31,6 +33,8 @@ type MyFixtures = {
     clientsPage: ClientsPage
     departmentsPage: DepartmentsPage
     countriesPage: CountriesPage
+    applyLeavesPage: ApplyLeavesPage
+    leaveHistoryPage: LeaveHistoryPage
 }
 
 /**
@@ -76,6 +80,12 @@ export const test = base.extend<MyFixtures>({
     },
     countriesPage: async ({ page }, use) => {
         return await use(new CountriesPage(page))
+    },
+    applyLeavesPage: async ({ page }, use) => {
+        return await use(new ApplyLeavesPage(page))
+    },
+    leaveHistoryPage: async ({ page }, use) => {
+        return await use(new LeaveHistoryPage(page))
     }
 })
 export { expect } from '@playwright/test'
